@@ -112,3 +112,102 @@ export async function apiFetch<T>(
 
   return data as T;
 }
+
+export interface Consignor {
+  id: number;
+  name: string;
+  phone: string | null;
+  note: string | null;
+  defaultMarginType: "nominal" | "percent" | null;
+  defaultMarginValue: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ListConsignorsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: "all" | "active" | "inactive";
+  sortBy?: "name" | "createdAt";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface ConsignorListResponse {
+  data: Consignor[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateConsignorPayload {
+  name: string;
+  phone?: string | null;
+  note?: string | null;
+  defaultMarginType?: "nominal" | "percent" | null;
+  defaultMarginValue?: string | null;
+}
+
+export interface UpdateConsignorPayload {
+  name?: string;
+  phone?: string | null;
+  note?: string | null;
+  defaultMarginType?: "nominal" | "percent" | null;
+  defaultMarginValue?: string | null;
+}
+
+export async function getConsignors(
+  params: ListConsignorsParams = {},
+): Promise<ConsignorListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set("page", String(params.page));
+  if (params.limit !== undefined) searchParams.set("limit", String(params.limit));
+  if (params.search !== undefined && params.search.trim() !== "") {
+    searchParams.set("search", params.search.trim());
+  }
+  if (params.status !== undefined) searchParams.set("status", params.status);
+  if (params.sortBy !== undefined) searchParams.set("sortBy", params.sortBy);
+  if (params.sortOrder !== undefined) searchParams.set("sortOrder", params.sortOrder);
+
+  const qs = searchParams.toString();
+  return apiFetch<ConsignorListResponse>(
+    `/api/v1/consignors${qs ? `?${qs}` : ""}`,
+  );
+}
+
+export async function getConsignor(id: number): Promise<{ data: Consignor }> {
+  return apiFetch<{ data: Consignor }>(`/api/v1/consignors/${id}`);
+}
+
+export async function createConsignor(
+  payload: CreateConsignorPayload,
+): Promise<{ data: Consignor }> {
+  return apiFetch<{ data: Consignor }>("/api/v1/consignors", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export async function updateConsignor(
+  id: number,
+  payload: UpdateConsignorPayload,
+): Promise<{ data: Consignor }> {
+  return apiFetch<{ data: Consignor }>(`/api/v1/consignors/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}
+
+export async function setConsignorStatus(
+  id: number,
+  isActive: boolean,
+): Promise<{ data: Consignor }> {
+  return apiFetch<{ data: Consignor }>(`/api/v1/consignors/${id}/status`, {
+    method: "PATCH",
+    body: { isActive },
+  });
+}
