@@ -62,6 +62,19 @@ describe("decideRedirect", () => {
     });
   });
 
+  it("does not redirect user at /login if searchParams has expired=1 even if hasSession is true", () => {
+    const searchParams = new URLSearchParams("expired=1");
+    const res = decideRedirect({
+      hasSession: true,
+      pathname: "/login",
+      searchParams,
+    });
+    expect(res).toEqual({
+      redirect: false,
+      destination: "",
+    });
+  });
+
   it("redirects authenticated user at /login to safe next destination", () => {
     const searchParams = new URLSearchParams("next=/produk");
     const res = decideRedirect({

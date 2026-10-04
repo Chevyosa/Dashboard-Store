@@ -39,6 +39,10 @@ export function decideRedirect(params: {
 
   // User has active session
   if (isLoginPage) {
+    if (searchParams?.has("expired")) {
+      return { redirect: false, destination: "" };
+    }
+
     const rawNext = searchParams?.get("next");
     const safeNext = sanitizeRedirectPath(rawNext);
     return {

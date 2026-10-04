@@ -5,6 +5,7 @@ import * as apiModule from "@/lib/api";
 const mockRedirect = vi.fn();
 const mockCookieStore = {
   toString: vi.fn().mockReturnValue("store_sid=valid-token"),
+  delete: vi.fn(),
 };
 
 vi.mock("next/navigation", () => ({
@@ -43,6 +44,7 @@ describe("verifySession", () => {
     );
 
     await expect(verifySession()).rejects.toThrow("REDIRECT:/login?expired=1");
+    expect(mockCookieStore.delete).toHaveBeenCalledWith("store_sid");
     expect(mockRedirect).toHaveBeenCalledWith("/login?expired=1");
   });
 
@@ -52,6 +54,7 @@ describe("verifySession", () => {
     );
 
     await expect(verifySession()).rejects.toThrow("REDIRECT:/login");
+    expect(mockCookieStore.delete).toHaveBeenCalledWith("store_sid");
     expect(mockRedirect).toHaveBeenCalledWith("/login");
   });
 });
