@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/produk', label: 'Produk' },
   { href: '/penitip', label: 'Penitip' },
+  { href: '/barang-masuk', label: 'Barang Masuk' },
 ];
 
 export function NavLinks() {

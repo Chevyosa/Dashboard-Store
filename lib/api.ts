@@ -337,3 +337,226 @@ export async function previewProductMargin(
     body: payload,
   });
 }
+
+// === STOCK IN & STOCK RETURN ===
+
+export interface StockInLine {
+  id: number;
+  stockInId: number;
+  productId: number;
+  productName: string;
+  ownerType: "own" | "consignor";
+  consignorName: string | null;
+  inputMode: "pack" | "pcs";
+  qtyPack: number | null;
+  pcsPerPackSnapshot: number;
+  qtyPcs: number;
+  totalCost: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StockIn {
+  id: number;
+  type: "purchase" | "consignment_in" | "initial";
+  date: string;
+  note: string | null;
+  opnameId: number | null;
+  totalCost: string;
+  totalQtyPcs: number;
+  linesCount: number;
+  lines?: StockInLine[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StockReturn {
+  id: number;
+  productId: number;
+  productName: string;
+  consignorId: number | null;
+  consignorName: string | null;
+  qtyPcs: number;
+  date: string;
+  note: string | null;
+  opnameId: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StockInSummary {
+  totalPurchaseCost: string;
+  totalLines: number;
+  totalOwnPcs: number;
+  totalConsignorPcs: number;
+  totalTransactions: number;
+  openReturnsCount: number;
+  openReturnedPcs: number;
+}
+
+export interface StockInLinePayload {
+  productId: number;
+  inputMode: "pack" | "pcs";
+  qtyPack?: number | null;
+  qtyPcs?: number | null;
+  totalCost: string;
+}
+
+export interface CreateStockInPayload {
+  type: "purchase" | "consignment_in" | "initial";
+  date: string;
+  note?: string | null;
+  lines: StockInLinePayload[];
+}
+
+export interface UpdateStockInPayload {
+  date?: string;
+  note?: string | null;
+  lines?: StockInLinePayload[];
+}
+
+export interface ListStockInsParams {
+  page?: number;
+  limit?: number;
+  type?: "purchase" | "consignment_in" | "initial";
+  period?: "open" | "closed" | "all";
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface StockInListResponse {
+  data: StockIn[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateStockReturnPayload {
+  productId: number;
+  qtyPcs: number;
+  date: string;
+  note?: string | null;
+}
+
+export interface UpdateStockReturnPayload {
+  qtyPcs?: number;
+  date?: string;
+  note?: string | null;
+}
+
+export interface ListStockReturnsParams {
+  page?: number;
+  limit?: number;
+  productId?: number;
+  consignorId?: number;
+  period?: "open" | "closed" | "all";
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface StockReturnListResponse {
+  data: StockReturn[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export async function getStockIns(
+  params: ListStockInsParams = {},
+): Promise<StockInListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set("page", String(params.page));
+  if (params.limit !== undefined) searchParams.set("limit", String(params.limit));
+  if (params.type !== undefined) searchParams.set("type", params.type);
+  if (params.period !== undefined) searchParams.set("period", params.period);
+  if (params.startDate !== undefined) searchParams.set("startDate", params.startDate);
+  if (params.endDate !== undefined) searchParams.set("endDate", params.endDate);
+
+  const qs = searchParams.toString();
+  return apiFetch<StockInListResponse>(`/api/v1/stock-ins${qs ? `?${qs}` : ""}`);
+}
+
+export async function getStockIn(id: number): Promise<{ data: StockIn }> {
+  return apiFetch<{ data: StockIn }>(`/api/v1/stock-ins/${id}`);
+}
+
+export async function createStockIn(
+  payload: CreateStockInPayload,
+): Promise<{ data: StockIn }> {
+  return apiFetch<{ data: StockIn }>("/api/v1/stock-ins", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export async function updateStockIn(
+  id: number,
+  payload: UpdateStockInPayload,
+): Promise<{ data: StockIn }> {
+  return apiFetch<{ data: StockIn }>(`/api/v1/stock-ins/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}
+
+export async function deleteStockIn(id: number): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/v1/stock-ins/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function getOpenPeriodStockInSummary(): Promise<{ data: StockInSummary }> {
+  return apiFetch<{ data: StockInSummary }>("/api/v1/stock-ins/summary/open-period");
+}
+
+export async function getStockReturns(
+  params: ListStockReturnsParams = {},
+): Promise<StockReturnListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set("page", String(params.page));
+  if (params.limit !== undefined) searchParams.set("limit", String(params.limit));
+  if (params.productId !== undefined) searchParams.set("productId", String(params.productId));
+  if (params.consignorId !== undefined) searchParams.set("consignorId", String(params.consignorId));
+  if (params.period !== undefined) searchParams.set("period", params.period);
+  if (params.startDate !== undefined) searchParams.set("startDate", params.startDate);
+  if (params.endDate !== undefined) searchParams.set("endDate", params.endDate);
+
+  const qs = searchParams.toString();
+  return apiFetch<StockReturnListResponse>(`/api/v1/stock-returns${qs ? `?${qs}` : ""}`);
+}
+
+export async function getStockReturn(id: number): Promise<{ data: StockReturn }> {
+  return apiFetch<{ data: StockReturn }>(`/api/v1/stock-returns/${id}`);
+}
+
+export async function createStockReturn(
+  payload: CreateStockReturnPayload,
+): Promise<{ data: StockReturn }> {
+  return apiFetch<{ data: StockReturn }>("/api/v1/stock-returns", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export async function updateStockReturn(
+  id: number,
+  payload: UpdateStockReturnPayload,
+): Promise<{ data: StockReturn }> {
+  return apiFetch<{ data: StockReturn }>(`/api/v1/stock-returns/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}
+
+export async function deleteStockReturn(id: number): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/v1/stock-returns/${id}`, {
+    method: "DELETE",
+  });
+}
+
