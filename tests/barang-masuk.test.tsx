@@ -168,9 +168,95 @@ describe('Barang Masuk & Retur Frontend', () => {
         expect(screen.getAllByText('3 pcs').length).toBeGreaterThan(0);
       });
     });
+
+    it('expands item details when clicking Lihat Rincian button', async () => {
+      const user = userEvent.setup();
+      render(<BarangMasukPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Barang Masuk & Retur')).toBeInTheDocument();
+      });
+
+      const expandBtn = screen.getAllByRole('button', { name: /Lihat Rincian/i })[0]!;
+      await user.click(expandBtn);
+
+      // Verify line details appear in the DOM (mobile card view)
+      await waitFor(() => {
+        expect(screen.getByText('Item Produk:')).toBeInTheDocument();
+        expect(screen.getByText('(2 pack)')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('StockInDialog', () => {
+    it('renders all lines when editing stock in with multiple lines', () => {
+      const onSaved = vi.fn();
+      const onClose = vi.fn();
+
+      const multiLineStockIn: apiModule.StockIn = {
+        id: 102,
+        type: 'initial',
+        date: '2026-10-01',
+        note: 'Stok awal 2 item',
+        opnameId: null,
+        totalCost: '35000.0000',
+        totalQtyPcs: 30,
+        linesCount: 2,
+        lines: [
+          {
+            id: 11,
+            stockInId: 102,
+            productId: 1,
+            productName: 'Gery Salut',
+            ownerType: 'own',
+            consignorName: null,
+            inputMode: 'pack',
+            qtyPack: 2,
+            pcsPerPackSnapshot: 10,
+            qtyPcs: 20,
+            totalCost: '35000.0000',
+            createdAt: '2026-10-01T00:00:00.000Z',
+            updatedAt: '2026-10-01T00:00:00.000Z',
+          },
+          {
+            id: 12,
+            stockInId: 102,
+            productId: 2,
+            productName: 'Lemper Ayam Pak Sani',
+            ownerType: 'consignor',
+            consignorName: 'Pak Sani',
+            inputMode: 'pcs',
+            qtyPack: null,
+            pcsPerPackSnapshot: 1,
+            qtyPcs: 10,
+            totalCost: '0.0000',
+            createdAt: '2026-10-01T00:00:00.000Z',
+            updatedAt: '2026-10-01T00:00:00.000Z',
+          },
+        ],
+        createdAt: '2026-10-01T00:00:00.000Z',
+        updatedAt: '2026-10-01T00:00:00.000Z',
+      };
+
+      render(
+        <StockInDialog
+          open={true}
+          onClose={onClose}
+          onSaved={onSaved}
+          initialData={multiLineStockIn}
+          products={mockProducts}
+        />,
+      );
+
+      // Verify header indicates editing
+      expect(screen.getByText('Ubah Barang Masuk')).toBeInTheDocument();
+
+      // Verify both items are rendered
+      expect(screen.getByText('Daftar Barang (2 Item)')).toBeInTheDocument();
+      expect(screen.getByText('#1')).toBeInTheDocument();
+      expect(screen.getByText('#2')).toBeInTheDocument();
+    });
+
     it('disables cost input for consignor products and shows Rp 0', async () => {
       const onSaved = vi.fn();
       const onClose = vi.fn();

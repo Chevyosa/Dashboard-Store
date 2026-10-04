@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   getStockIns,
+  getStockIn,
   getStockReturns,
   getProducts,
   getOpenPeriodStockInSummary,
@@ -166,9 +167,21 @@ export default function BarangMasukPage() {
     setStockInDialogOpen(true);
   }
 
-  function handleOpenEditStockIn(item: StockIn) {
-    setSelectedStockIn(item);
-    setStockInDialogOpen(true);
+  async function handleOpenEditStockIn(item: StockIn) {
+    if (item.lines && item.lines.length > 0) {
+      setSelectedStockIn(item);
+      setStockInDialogOpen(true);
+      return;
+    }
+
+    try {
+      const res = await getStockIn(item.id);
+      setSelectedStockIn(res.data);
+      setStockInDialogOpen(true);
+    } catch {
+      setSelectedStockIn(item);
+      setStockInDialogOpen(true);
+    }
   }
 
   function handleStockInSaved(saved: StockIn) {

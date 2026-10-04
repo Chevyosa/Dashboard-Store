@@ -36,6 +36,13 @@ function getTodayJakarta(): string {
   }
 }
 
+function cleanDecimalTrailingZeros(val: string): string {
+  if (val.includes('.')) {
+    return val.replace(/\.?0+$/, '');
+  }
+  return val;
+}
+
 interface FormContentProps {
   onClose: () => void;
   onSaved: (stockIn: StockIn) => void;
@@ -93,7 +100,7 @@ function StockInFormContent({
         inputMode: l.inputMode,
         qtyPack: l.qtyPack ? String(l.qtyPack) : '1',
         qtyPcs: String(l.qtyPcs),
-        totalCost: l.ownerType === 'own' ? l.totalCost.replace(/\.0000$/, '') : '0',
+        totalCost: l.ownerType === 'own' ? cleanDecimalTrailingZeros(l.totalCost) : '0',
       }));
     }
     const firstProd = products.find((p) => (initialData ? true : p.ownerType === 'own'));
