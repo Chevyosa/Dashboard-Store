@@ -211,3 +211,129 @@ export async function setConsignorStatus(
     body: { isActive },
   });
 }
+
+export interface ProductMarginInfo {
+  ownerMarginPerPcs: string | null;
+  ownerMarginPerPack: string | null;
+  consignorSharePerPcs: string | null;
+  consignorSharePerPack: string | null;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  ownerType: "own" | "consignor";
+  consignorId: number | null;
+  consignorName: string | null;
+  pcsPerPack: number;
+  sellPrice: string;
+  marginType: "nominal" | "percent" | null;
+  marginValue: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  marginInfo: ProductMarginInfo;
+}
+
+export interface ListProductsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  ownerType?: "own" | "consignor";
+  consignorId?: number;
+  isActive?: "true" | "false" | "all";
+  sortBy?: "name" | "ownerType" | "sellPrice" | "isActive" | "createdAt";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface ProductListResponse {
+  data: Product[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateProductPayload {
+  name: string;
+  ownerType: "own" | "consignor";
+  consignorId?: number | null;
+  pcsPerPack: number;
+  sellPrice: string;
+  marginType?: "nominal" | "percent" | null;
+  marginValue?: string | null;
+}
+
+export type UpdateProductPayload = CreateProductPayload;
+
+export interface PreviewMarginPayload {
+  ownerType: "own" | "consignor";
+  pcsPerPack: number;
+  sellPrice: string;
+  marginType?: "nominal" | "percent";
+  marginValue?: string;
+  avgCost?: string;
+}
+
+export async function getProducts(
+  params: ListProductsParams = {},
+): Promise<ProductListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set("page", String(params.page));
+  if (params.limit !== undefined) searchParams.set("limit", String(params.limit));
+  if (params.search !== undefined && params.search.trim() !== "") {
+    searchParams.set("search", params.search.trim());
+  }
+  if (params.ownerType !== undefined) searchParams.set("ownerType", params.ownerType);
+  if (params.consignorId !== undefined) searchParams.set("consignorId", String(params.consignorId));
+  if (params.isActive !== undefined) searchParams.set("isActive", params.isActive);
+  if (params.sortBy !== undefined) searchParams.set("sortBy", params.sortBy);
+  if (params.sortOrder !== undefined) searchParams.set("sortOrder", params.sortOrder);
+
+  const qs = searchParams.toString();
+  return apiFetch<ProductListResponse>(`/api/v1/products${qs ? `?${qs}` : ""}`);
+}
+
+export async function getProduct(id: number): Promise<{ data: Product }> {
+  return apiFetch<{ data: Product }>(`/api/v1/products/${id}`);
+}
+
+export async function createProduct(
+  payload: CreateProductPayload,
+): Promise<{ data: Product }> {
+  return apiFetch<{ data: Product }>("/api/v1/products", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export async function updateProduct(
+  id: number,
+  payload: UpdateProductPayload,
+): Promise<{ data: Product }> {
+  return apiFetch<{ data: Product }>(`/api/v1/products/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}
+
+export async function setProductStatus(
+  id: number,
+  isActive: boolean,
+): Promise<{ data: Product }> {
+  return apiFetch<{ data: Product }>(`/api/v1/products/${id}/status`, {
+    method: "PATCH",
+    body: { isActive },
+  });
+}
+
+export async function previewProductMargin(
+  payload: PreviewMarginPayload,
+): Promise<{ data: ProductMarginInfo }> {
+  return apiFetch<{ data: ProductMarginInfo }>("/api/v1/products/preview", {
+    method: "POST",
+    body: payload,
+  });
+}
