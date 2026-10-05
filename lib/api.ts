@@ -560,3 +560,136 @@ export async function deleteStockReturn(id: number): Promise<{ message: string }
   });
 }
 
+// === LOSS (BARANG RUSAK & HILANG) ===
+
+export type LossReason =
+  | 'expired'
+  | 'damaged_on_display'
+  | 'damaged_before_display'
+  | 'lost'
+  | 'other';
+
+export type LossBorneBy = 'owner' | 'consignor';
+
+export interface LossRecord {
+  id: number;
+  productId: number;
+  productName: string;
+  ownerType: 'own' | 'consignor';
+  consignorId: number | null;
+  consignorName: string | null;
+  sellPrice: string;
+  marginType: 'nominal' | 'percent' | null;
+  marginValue: string | null;
+  qtyPcs: number;
+  reason: LossReason;
+  borneBy: LossBorneBy;
+  date: string;
+  note: string | null;
+  opnameId: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateLossPayload {
+  productId: number;
+  qtyPcs: number;
+  reason: LossReason;
+  borneBy?: LossBorneBy;
+  date: string;
+  note?: string | null;
+}
+
+export interface UpdateLossPayload {
+  productId?: number;
+  qtyPcs?: number;
+  reason?: LossReason;
+  borneBy?: LossBorneBy;
+  date?: string;
+  note?: string | null;
+}
+
+export interface ListLossesParams {
+  page?: number;
+  limit?: number;
+  period?: 'open' | 'closed' | 'all';
+  reason?: LossReason;
+  borneBy?: LossBorneBy;
+  productId?: number;
+  startDate?: string;
+  endDate?: string;
+  sortBy?: 'date' | 'id' | 'qty_pcs' | 'created_at';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface LossSummary {
+  totalPcs: number;
+  totalRecords: number;
+  totalOwnerBornePcs: number;
+  totalConsignorBornePcs: number;
+  breakdownByReason: Record<LossReason, number>;
+}
+
+export interface LossListResponse {
+  data: LossRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export async function getLosses(
+  params: ListLossesParams = {},
+): Promise<LossListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set('page', String(params.page));
+  if (params.limit !== undefined) searchParams.set('limit', String(params.limit));
+  if (params.period !== undefined) searchParams.set('period', params.period);
+  if (params.reason !== undefined) searchParams.set('reason', params.reason);
+  if (params.borneBy !== undefined) searchParams.set('borneBy', params.borneBy);
+  if (params.productId !== undefined) searchParams.set('productId', String(params.productId));
+  if (params.startDate !== undefined) searchParams.set('startDate', params.startDate);
+  if (params.endDate !== undefined) searchParams.set('endDate', params.endDate);
+  if (params.sortBy !== undefined) searchParams.set('sortBy', params.sortBy);
+  if (params.sortOrder !== undefined) searchParams.set('sortOrder', params.sortOrder);
+
+  const qs = searchParams.toString();
+  return apiFetch<LossListResponse>(`/api/v1/losses${qs ? `?${qs}` : ''}`);
+}
+
+export async function getLoss(id: number): Promise<{ data: LossRecord }> {
+  return apiFetch<{ data: LossRecord }>(`/api/v1/losses/${id}`);
+}
+
+export async function createLoss(
+  payload: CreateLossPayload,
+): Promise<{ data: LossRecord }> {
+  return apiFetch<{ data: LossRecord }>('/api/v1/losses', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export async function updateLoss(
+  id: number,
+  payload: UpdateLossPayload,
+): Promise<{ data: LossRecord }> {
+  return apiFetch<{ data: LossRecord }>(`/api/v1/losses/${id}`, {
+    method: 'PUT',
+    body: payload,
+  });
+}
+
+export async function deleteLoss(id: number): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/v1/losses/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getOpenPeriodLossSummary(): Promise<{ data: LossSummary }> {
+  return apiFetch<{ data: LossSummary }>('/api/v1/losses/summary/open-period');
+}
+
+

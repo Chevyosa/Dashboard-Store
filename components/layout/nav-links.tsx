@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: '/produk', label: 'Produk' },
   { href: '/penitip', label: 'Penitip' },
   { href: '/barang-masuk', label: 'Barang Masuk' },
+  { href: '/loss', label: 'Loss' },
 ];
 
 export function NavLinks() {
