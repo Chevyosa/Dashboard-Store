@@ -692,4 +692,204 @@ export async function getOpenPeriodLossSummary(): Promise<{ data: LossSummary }>
   return apiFetch<{ data: LossSummary }>('/api/v1/losses/summary/open-period');
 }
 
+// ---------------------------------------------------------------------------
+// OPNAME (T-10)
+// ---------------------------------------------------------------------------
+
+export interface PhysicalItemInput {
+  productId: number;
+  physicalQty: number;
+}
+
+export interface OpnameItem {
+  id?: number;
+  opnameId?: number;
+  productId: number;
+  ownerType: 'own' | 'consignor';
+  consignorId: number | null;
+  productNameSnapshot: string;
+  sellPriceSnapshot: string;
+  marginTypeSnapshot: 'nominal' | 'percent' | null;
+  marginValueSnapshot: string | null;
+  pcsPerPackSnapshot: number;
+  openingQty: number;
+  openingValue: string;
+  inQty: number;
+  inCost: string;
+  returnedQty: number;
+  expectedQty: number;
+  physicalQty: number;
+  diffQty: number;
+  lossQty: number;
+  soldQty: number;
+  avgCost: string;
+  cogs: string;
+  ownLossCost: string;
+  closingValue: string;
+  turnover: string;
+  ownerMarginPerPcs: string;
+  consignorSharePerPcs: string;
+  soldShare: string;
+  lossQtyOwnerBorne: number;
+  lossCompensation: string;
+  payoutDue: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface OpnameConsignorPayout {
+  id?: number;
+  opnameId?: number;
+  consignorId: number;
+  consignorName?: string;
+  soldShare: string;
+  lossCompensation: string;
+  payoutDue: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface OpnameRecord {
+  id: number;
+  opnameDate: string;
+  status: 'draft' | 'final';
+  note: string | null;
+  totalTurnover: string;
+  totalSoldQty: number;
+  totalLossQty: number;
+  totalCogs: string;
+  totalPayoutDue: string;
+  createdAt: string;
+  updatedAt: string;
+  items?: OpnameItem[];
+  payouts?: OpnameConsignorPayout[];
+}
+
+export interface PreparedSheetProduct {
+  productId: number;
+  productName: string;
+  ownerType: 'own' | 'consignor';
+  consignorId: number | null;
+  consignorName: string | null;
+  pcsPerPack: number;
+  sellPrice: string;
+  marginType: 'nominal' | 'percent' | null;
+  marginValue: string | null;
+  openingQty: number;
+  openingValue: string;
+  inQty: number;
+  inCost: string;
+  returnedQty: number;
+  expectedQty: number;
+  lossQty: number;
+  losses: { qty: number; reason: LossReason; borneBy: LossBorneBy; note?: string }[];
+  draftPhysicalQty: number | null;
+}
+
+export interface OpnamePrepareSheet {
+  opnameDate: string;
+  existingOpname: OpnameRecord | null;
+  products: PreparedSheetProduct[];
+}
+
+export interface CalculateOpnameResponse {
+  data: {
+    calculatedItems: OpnameItem[];
+    calculatedPayouts: {
+      consignorId: number;
+      soldShare: string;
+      lossCompensation: string;
+      payoutDue: string;
+    }[];
+    totals: {
+      totalTurnover: string;
+      totalSoldQty: number;
+      totalLossQty: number;
+      totalCogs: string;
+      totalPayoutDue: string;
+    };
+  };
+}
+
+export interface ListOpnamesParams {
+  page?: number;
+  limit?: number;
+  status?: 'draft' | 'final' | 'all';
+  startDate?: string;
+  endDate?: string;
+  sortBy?: 'opname_date' | 'id' | 'created_at';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface OpnameListResponse {
+  data: OpnameRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export async function prepareOpname(date: string): Promise<{ data: OpnamePrepareSheet }> {
+  return apiFetch<{ data: OpnamePrepareSheet }>(`/api/v1/opnames/prepare?date=${encodeURIComponent(date)}`);
+}
+
+export async function calculateOpname(payload: {
+  opnameDate: string;
+  items: PhysicalItemInput[];
+}): Promise<CalculateOpnameResponse> {
+  return apiFetch<CalculateOpnameResponse>('/api/v1/opnames/calculate', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export async function saveDraftOpname(payload: {
+  opnameDate: string;
+  note?: string | null;
+  items: PhysicalItemInput[];
+}): Promise<{ data: OpnameRecord }> {
+  return apiFetch<{ data: OpnameRecord }>('/api/v1/opnames/draft', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export async function finalizeOpname(payload: {
+  opnameDate: string;
+  note?: string | null;
+  items: PhysicalItemInput[];
+}): Promise<{ data: OpnameRecord }> {
+  return apiFetch<{ data: OpnameRecord }>('/api/v1/opnames/finalize', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export async function getOpnames(params: ListOpnamesParams = {}): Promise<OpnameListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set('page', String(params.page));
+  if (params.limit !== undefined) searchParams.set('limit', String(params.limit));
+  if (params.status !== undefined) searchParams.set('status', params.status);
+  if (params.startDate !== undefined) searchParams.set('startDate', params.startDate);
+  if (params.endDate !== undefined) searchParams.set('endDate', params.endDate);
+  if (params.sortBy !== undefined) searchParams.set('sortBy', params.sortBy);
+  if (params.sortOrder !== undefined) searchParams.set('sortOrder', params.sortOrder);
+
+  const qs = searchParams.toString();
+  return apiFetch<OpnameListResponse>(`/api/v1/opnames${qs ? `?${qs}` : ''}`);
+}
+
+export async function getOpname(id: number): Promise<{ data: OpnameRecord }> {
+  return apiFetch<{ data: OpnameRecord }>(`/api/v1/opnames/${id}`);
+}
+
+export async function deleteDraftOpname(id: number): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/v1/opnames/${id}/draft`, {
+    method: 'DELETE',
+  });
+}
+
+
 

@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: '/penitip', label: 'Penitip' },
   { href: '/barang-masuk', label: 'Barang Masuk' },
   { href: '/loss', label: 'Loss' },
+  { href: '/opname', label: 'Opname' },
 ];
 
 export function NavLinks() {
