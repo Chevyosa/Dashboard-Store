@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: '/loss', label: 'Loss' },
   { href: '/opname', label: 'Opname' },
   { href: '/payout', label: 'Payout' },
+  { href: '/audit', label: 'Riwayat' },
 ];
 
 export function NavLinks() {

@@ -1150,6 +1150,75 @@ export async function calculateDashboardReconciliation(
   });
 }
 
+// ==========================================
+// Audit Trail Types & API
+// ==========================================
+
+export interface AuditLogItem {
+  id: number;
+  userId: number | null;
+  username: string | null;
+  action: string;
+  entityType: string | null;
+  entityId: string | null;
+  before: unknown | null;
+  after: unknown | null;
+  ip: string | null;
+  userAgent: string | null;
+  createdAt: string;
+}
+
+export interface AuditLogsResponse {
+  data: AuditLogItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface AuditFilterOptionsResponse {
+  data: {
+    actions: string[];
+    entityTypes: string[];
+  };
+}
+
+export interface ListAuditLogsParams {
+  page?: number;
+  limit?: number;
+  action?: string;
+  entityType?: string;
+  entityId?: string;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+}
+
+export async function getAuditLogs(params: ListAuditLogsParams = {}): Promise<AuditLogsResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set('page', String(params.page));
+  if (params.limit !== undefined) searchParams.set('limit', String(params.limit));
+  if (params.action) searchParams.set('action', params.action);
+  if (params.entityType) searchParams.set('entityType', params.entityType);
+  if (params.entityId) searchParams.set('entityId', params.entityId);
+  if (params.startDate) searchParams.set('startDate', params.startDate);
+  if (params.endDate) searchParams.set('endDate', params.endDate);
+  if (params.search) searchParams.set('search', params.search);
+  const qs = searchParams.toString();
+  return apiFetch<AuditLogsResponse>(`/api/v1/audit-logs${qs ? `?${qs}` : ''}`);
+}
+
+export async function getAuditLogFilters(): Promise<AuditFilterOptionsResponse> {
+  return apiFetch<AuditFilterOptionsResponse>('/api/v1/audit-logs/filters');
+}
+
+export async function getAuditLogDetail(id: number): Promise<{ data: AuditLogItem }> {
+  return apiFetch<{ data: AuditLogItem }>(`/api/v1/audit-logs/${id}`);
+}
+
+
 
 
 
