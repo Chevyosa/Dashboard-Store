@@ -1031,6 +1031,126 @@ export async function deleteConsignorPayment(id: number): Promise<{ message: str
   });
 }
 
+// ==========================================
+// Dashboard & Cash Reconciliation Types & API
+// ==========================================
+
+export interface DashboardOverview {
+  activeProductsCount: number;
+  activeConsignorsCount: number;
+  totalStockValuation: string;
+  totalUnpaidConsignorBalance: string;
+  latestOpname: {
+    id: number;
+    opnameDate: string;
+    status: 'draft' | 'final';
+    totalTurnover: string;
+    totalSoldQty: number;
+    totalLossQty: number;
+    totalCogs: string;
+    totalPayoutDue: string;
+  } | null;
+  hasActiveDraft: boolean;
+  activeDraftDate: string | null;
+}
+
+export interface DashboardTurnoverBreakdown {
+  ownTurnover: string;
+  consignorTurnover: string;
+  totalTurnover: string;
+  ownPercentage: number;
+  consignorPercentage: number;
+}
+
+export interface DashboardTopProduct {
+  productId: number;
+  name: string;
+  ownerType: 'own' | 'consignor';
+  soldQty: number;
+  turnover: string;
+}
+
+export interface DashboardPendingPayout {
+  consignorId: number;
+  consignorName: string;
+  phone: string | null;
+  totalAccrual: string;
+  totalPayment: string;
+  balance: string;
+}
+
+export interface DashboardRecentOpname {
+  id: number;
+  opnameDate: string;
+  status: 'draft' | 'final';
+  totalTurnover: string;
+  totalSoldQty: number;
+  totalLossQty: number;
+  totalCogs: string;
+  totalPayoutDue: string;
+}
+
+export interface DashboardOpnameOption {
+  id: number;
+  opnameDate: string;
+  status: 'draft' | 'final';
+}
+
+export interface DashboardReconciliationResult {
+  opnameId: number;
+  opnameDate: string;
+  theoreticalTurnover: string;
+  turnoverOwn: string;
+  turnoverConsignor: string;
+  qrisAmount: string;
+  cashAmount: string;
+  realCash: string;
+  cashDifference: string;
+  cashDifferenceHint: string;
+  totalCogs: string;
+  totalOwnLossCost: string;
+  totalLossCompensation: string;
+  totalOpeningValue: string;
+  totalClosingValue: string;
+  modalBelanjaOwn: string;
+  totalPayoutDue: string;
+  profitA: string;
+  profitB: string;
+  profitDiff: string;
+  invariantI3Satisfied: boolean;
+}
+
+export interface DashboardSummaryResponse {
+  overview: DashboardOverview;
+  turnoverBreakdown: DashboardTurnoverBreakdown;
+  topProducts: DashboardTopProduct[];
+  pendingPayoutConsignors: DashboardPendingPayout[];
+  recentOpnames: DashboardRecentOpname[];
+  opnameOptions: DashboardOpnameOption[];
+  latestReconciliation: DashboardReconciliationResult | null;
+}
+
+export interface CalculateReconciliationPayload {
+  opnameId?: number;
+  cashAmount: string;
+  qrisAmount: string;
+  modalBelanjaOwn?: string;
+}
+
+export async function getDashboardSummary(): Promise<{ data: DashboardSummaryResponse }> {
+  return apiFetch<{ data: DashboardSummaryResponse }>('/api/v1/dashboard/summary');
+}
+
+export async function calculateDashboardReconciliation(
+  payload: CalculateReconciliationPayload,
+): Promise<{ data: DashboardReconciliationResult }> {
+  return apiFetch<{ data: DashboardReconciliationResult }>('/api/v1/dashboard/reconciliation', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+
 
 
 
