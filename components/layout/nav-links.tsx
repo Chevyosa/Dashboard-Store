@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/barang-masuk', label: 'Barang Masuk' },
   { href: '/loss', label: 'Loss' },
   { href: '/opname', label: 'Opname' },
+  { href: '/payout', label: 'Payout' },
 ];
 
 export function NavLinks() {

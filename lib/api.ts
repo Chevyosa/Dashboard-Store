@@ -891,5 +891,146 @@ export async function deleteDraftOpname(id: number): Promise<{ message: string }
   });
 }
 
+// ---------------------------------------------------------------------------
+// PAYOUT & CONSIGNOR LEDGER (T-11)
+// ---------------------------------------------------------------------------
+
+export type ConsignorLedgerStatus = 'unpaid' | 'settled' | 'overpaid';
+
+export interface ConsignorLedgerItem {
+  consignorId: number;
+  consignorName: string;
+  phone: string | null;
+  isActive: boolean;
+  totalAccrual: string;
+  totalPayment: string;
+  balance: string;
+  status: ConsignorLedgerStatus;
+}
+
+export interface ConsignorLedgersOverview {
+  totals: {
+    totalAccrual: string;
+    totalPayment: string;
+    totalBalance: string;
+    unpaidCount: number;
+  };
+  ledgers: ConsignorLedgerItem[];
+}
+
+export interface ConsignorAccrual {
+  id: number;
+  opnameId: number;
+  opnameDate: string;
+  consignorId: number;
+  soldShare: string;
+  lossCompensation: string;
+  payoutDue: string;
+  createdAt: string;
+}
+
+export interface ConsignorPayment {
+  id: number;
+  consignorId: number;
+  consignorName: string;
+  opnameId: number | null;
+  opnameDate: string | null;
+  amount: string;
+  paymentDate: string;
+  paymentMethod: 'cash' | 'transfer' | 'qris';
+  note: string | null;
+  createdBy: number | null;
+  createdByUsername: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConsignorLedgerDetail {
+  consignor: {
+    id: number;
+    name: string;
+    phone: string | null;
+    note: string | null;
+    isActive: boolean;
+  };
+  summary: {
+    totalAccrual: string;
+    totalPayment: string;
+    balance: string;
+    status: ConsignorLedgerStatus;
+  };
+  accruals: ConsignorAccrual[];
+  payments: ConsignorPayment[];
+}
+
+export interface CreatePaymentPayload {
+  consignorId: number;
+  opnameId?: number | null;
+  amount: string;
+  paymentDate: string;
+  paymentMethod: 'cash' | 'transfer' | 'qris';
+  note?: string | null;
+}
+
+export interface ListPaymentsParams {
+  page?: number;
+  limit?: number;
+  consignorId?: number;
+  opnameId?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface PaymentListResponse {
+  data: ConsignorPayment[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export async function getConsignorLedgers(params: {
+  status?: string;
+  search?: string;
+} = {}): Promise<{ data: ConsignorLedgersOverview }> {
+  const searchParams = new URLSearchParams();
+  if (params.status) searchParams.set('status', params.status);
+  if (params.search) searchParams.set('search', params.search);
+  const qs = searchParams.toString();
+  return apiFetch<{ data: ConsignorLedgersOverview }>(`/api/v1/payouts/ledgers${qs ? `?${qs}` : ''}`);
+}
+
+export async function getConsignorLedger(consignorId: number): Promise<{ data: ConsignorLedgerDetail }> {
+  return apiFetch<{ data: ConsignorLedgerDetail }>(`/api/v1/payouts/ledgers/${consignorId}`);
+}
+
+export async function getConsignorPayments(params: ListPaymentsParams = {}): Promise<PaymentListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set('page', String(params.page));
+  if (params.limit !== undefined) searchParams.set('limit', String(params.limit));
+  if (params.consignorId !== undefined) searchParams.set('consignorId', String(params.consignorId));
+  if (params.opnameId !== undefined) searchParams.set('opnameId', String(params.opnameId));
+  if (params.startDate) searchParams.set('startDate', params.startDate);
+  if (params.endDate) searchParams.set('endDate', params.endDate);
+  const qs = searchParams.toString();
+  return apiFetch<PaymentListResponse>(`/api/v1/payouts/payments${qs ? `?${qs}` : ''}`);
+}
+
+export async function createConsignorPayment(payload: CreatePaymentPayload): Promise<{ data: ConsignorPayment }> {
+  return apiFetch<{ data: ConsignorPayment }>('/api/v1/payouts/payments', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export async function deleteConsignorPayment(id: number): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/v1/payouts/payments/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+
 
 
