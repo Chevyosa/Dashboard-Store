@@ -759,6 +759,12 @@ export interface OpnameRecord {
   totalLossQty: number;
   totalCogs: string;
   totalPayoutDue: string;
+  cashAmount: string;
+  qrisAmount: string;
+  realCash: string;
+  cashDifference: string;
+  profitA: string;
+  profitB: string;
   createdAt: string;
   updatedAt: string;
   items?: OpnameItem[];
@@ -807,6 +813,22 @@ export interface CalculateOpnameResponse {
       totalLossQty: number;
       totalCogs: string;
       totalPayoutDue: string;
+      cashAmount: string;
+      qrisAmount: string;
+      realCash: string;
+      cashDifference: string;
+      profitA: string;
+      profitB: string;
+    };
+    reconciliation: {
+      theoreticalTurnover: string;
+      realCash: string;
+      cashDifference: string;
+      cashDifferenceHint: string;
+      profitA: string;
+      profitB: string;
+      profitDiff: string;
+      invariantI3Satisfied: boolean;
     };
   };
 }
@@ -838,6 +860,8 @@ export async function prepareOpname(date: string): Promise<{ data: OpnamePrepare
 export async function calculateOpname(payload: {
   opnameDate: string;
   items: PhysicalItemInput[];
+  cashAmount?: string;
+  qrisAmount?: string;
 }): Promise<CalculateOpnameResponse> {
   return apiFetch<CalculateOpnameResponse>('/api/v1/opnames/calculate', {
     method: 'POST',
@@ -849,6 +873,8 @@ export async function saveDraftOpname(payload: {
   opnameDate: string;
   note?: string | null;
   items: PhysicalItemInput[];
+  cashAmount?: string;
+  qrisAmount?: string;
 }): Promise<{ data: OpnameRecord }> {
   return apiFetch<{ data: OpnameRecord }>('/api/v1/opnames/draft', {
     method: 'POST',
@@ -860,6 +886,8 @@ export async function finalizeOpname(payload: {
   opnameDate: string;
   note?: string | null;
   items: PhysicalItemInput[];
+  cashAmount?: string;
+  qrisAmount?: string;
 }): Promise<{ data: OpnameRecord }> {
   return apiFetch<{ data: OpnameRecord }>('/api/v1/opnames/finalize', {
     method: 'POST',

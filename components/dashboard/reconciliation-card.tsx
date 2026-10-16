@@ -59,6 +59,8 @@ export function ReconciliationCard({
         qrisAmount: qrisAmount.trim() || '0',
       });
       setReconciliation(res.data);
+      if (res.data.cashAmount) setCashAmount(String(parseInt(res.data.cashAmount, 10) || 0));
+      if (res.data.qrisAmount) setQrisAmount(String(parseInt(res.data.qrisAmount, 10) || 0));
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Gagal memuat rekonsiliasi periode tersebut.');
     } finally {

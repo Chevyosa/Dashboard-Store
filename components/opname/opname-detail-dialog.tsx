@@ -142,6 +142,65 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
               </div>
             </div>
 
+            {/* Rekonsiliasi Kas & Profit Permanen */}
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-3.5 space-y-3">
+              <div className="flex items-center justify-between border-b border-zinc-200/60 pb-2">
+                <span className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
+                  <span>💵</span> Rekonsiliasi Kas Masuk Mingguan
+                </span>
+                <span className="text-[11px] font-mono text-zinc-500">
+                  Status Kasir:{' '}
+                  <strong
+                    className={
+                      Number(opname.cashDifference) === 0
+                        ? 'text-emerald-700'
+                        : Number(opname.cashDifference) < 0
+                        ? 'text-red-700'
+                        : 'text-blue-700'
+                    }
+                  >
+                    {Number(opname.cashDifference) === 0
+                      ? 'Cocok / Pas (Rp 0)'
+                      : Number(opname.cashDifference) < 0
+                      ? `Minus ${formatRupiah(String(Math.abs(Number(opname.cashDifference))))}`
+                      : `Lebih +${formatRupiah(String(Number(opname.cashDifference)))}`}
+                  </strong>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
+                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Uang Tunai (Cash)</span>
+                  <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.cashAmount)}</span>
+                </div>
+                <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
+                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Uang QRIS / Transfer</span>
+                  <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.qrisAmount)}</span>
+                </div>
+                <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
+                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Total Uang Riil (R)</span>
+                  <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.realCash)}</span>
+                </div>
+                <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
+                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Omset Teoritis (T)</span>
+                  <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.totalTurnover)}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-zinc-200/60 text-xs">
+                <div className="bg-white p-2.5 rounded-lg border border-zinc-200/70">
+                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Profit A (Basis Barang / Akrual)</span>
+                  <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.profitA)}</span>
+                  <span className="text-[10px] text-zinc-400 block mt-0.5">Penjualan own & titipan dikurangi biaya barang & kerugian</span>
+                </div>
+                <div className="bg-white p-2.5 rounded-lg border border-zinc-200/70">
+                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Profit B (Basis Kas Riil)</span>
+                  <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.profitB)}</span>
+                  <span className="text-[10px] text-zinc-400 block mt-0.5">Uang riil (R) dikurangi kewajiban mitra dan modal belanja</span>
+                </div>
+              </div>
+            </div>
+
             {/* Note if exists */}
             {opname.note && (
               <div className="rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 text-xs text-zinc-600">
