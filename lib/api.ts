@@ -398,6 +398,7 @@ export interface StockInLinePayload {
   productId: number;
   inputMode: "pack" | "pcs";
   qtyPack?: number | null;
+  pcsPerPack?: number | null;
   qtyPcs?: number | null;
   totalCost: string;
 }

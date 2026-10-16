@@ -34,14 +34,9 @@ export function ProductTable({ products, onEdit, onToggleStatus }: Props) {
 
               return (
                 <tr key={p.id} className="hover:bg-zinc-50/50 transition-colors">
-                  {/* Name & Pack */}
+                  {/* Name */}
                   <td className="py-3.5 px-4">
                     <div className="font-semibold text-zinc-900">{p.name}</div>
-                    {p.pcsPerPack > 1 && (
-                      <span className="text-[10px] font-mono text-zinc-400">
-                        1 pack = {p.pcsPerPack} pcs
-                      </span>
-                    )}
                   </td>
 
                   {/* Ownership Badge */}

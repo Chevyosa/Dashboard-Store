@@ -41,9 +41,6 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
   const [consignorId, setConsignorId] = useState<number | null>(
     initialData?.consignorId ?? (consignors[0]?.id ?? null)
   );
-  const [pcsPerPack, setPcsPerPack] = useState(
-    initialData?.pcsPerPack ? String(initialData.pcsPerPack) : '1'
-  );
   const [sellPrice, setSellPrice] = useState(initialData?.sellPrice ?? '');
   const [marginType, setMarginType] = useState<'nominal' | 'percent'>(
     initialData?.marginType ?? 'nominal'
@@ -67,7 +64,6 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
   const nameId = useId();
   const ownerTypeId = useId();
   const consignorSelectId = useId();
-  const pcsPackId = useId();
   const sellPriceId = useId();
   const setorPriceId = useId();
   const marginValId = useId();
@@ -113,7 +109,6 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
       }
 
       if (ownerType === 'consignor') {
-        const packNum = parseInt(pcsPerPack, 10) || 1;
         const trimmedSell = sellPrice.trim();
         const trimmedMargin = marginValue.trim();
 
@@ -125,7 +120,7 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
         try {
           const res = await previewProductMargin({
             ownerType: 'consignor',
-            pcsPerPack: packNum,
+            pcsPerPack: 1,
             sellPrice: trimmedSell,
             marginType,
             marginValue: trimmedMargin,
@@ -149,7 +144,7 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
       ignore = true;
       clearTimeout(timer);
     };
-  }, [ownerType, pcsPerPack, sellPrice, marginType, marginValue]);
+  }, [ownerType, sellPrice, marginType, marginValue]);
 
   // Handle Setor price calculation for convenience mode
   function handleSetorChange(val: string) {
@@ -179,12 +174,6 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
     const trimmedName = name.trim();
     if (!trimmedName) {
       setErrorMessage('Nama produk wajib diisi.');
-      return;
-    }
-
-    const packInt = parseInt(pcsPerPack, 10);
-    if (isNaN(packInt) || packInt < 1) {
-      setErrorMessage('Isi per kemasan harus berupa angka minimal 1 pcs.');
       return;
     }
 
@@ -234,7 +223,7 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
       name: trimmedName,
       ownerType,
       consignorId: ownerType === 'consignor' ? consignorId : null,
-      pcsPerPack: packInt,
+      pcsPerPack: 1,
       sellPrice: trimmedSell,
       marginType: ownerType === 'consignor' ? marginType : null,
       marginValue: ownerType === 'consignor' ? marginValue.trim() : null,
@@ -361,40 +350,23 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
           />
         </div>
 
-        {/* Pack / Pcs config */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor={pcsPackId} className="text-xs font-semibold text-zinc-700">
-              Isi per Pack <span className="text-zinc-400 font-normal">(pcs)</span>
-            </Label>
+        {/* Sell Price */}
+        <div className="space-y-1.5">
+          <Label htmlFor={sellPriceId} className="text-xs font-semibold text-zinc-700">
+            Harga Jual per Pcs <span className="text-red-500">*</span>
+          </Label>
+          <div className="relative">
+            <span className="absolute left-3 top-2.5 text-xs font-mono text-zinc-400">Rp</span>
             <Input
-              id={pcsPackId}
-              type="number"
-              min={1}
-              value={pcsPerPack}
-              onChange={(e) => setPcsPerPack(e.target.value)}
-              className="h-9 text-xs font-mono"
+              id={sellPriceId}
+              type="text"
+              placeholder="1500"
+              value={sellPrice}
+              onChange={(e) => setSellPrice(e.target.value)}
+              className="h-9 pl-9 text-xs font-mono"
             />
-            <p className="text-[10px] text-zinc-400">Default 1 jika satuan eceran.</p>
           </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor={sellPriceId} className="text-xs font-semibold text-zinc-700">
-              Harga Jual per Pcs <span className="text-red-500">*</span>
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-xs font-mono text-zinc-400">Rp</span>
-              <Input
-                id={sellPriceId}
-                type="text"
-                placeholder="1500"
-                value={sellPrice}
-                onChange={(e) => setSellPrice(e.target.value)}
-                className="h-9 pl-9 text-xs font-mono"
-              />
-            </div>
-            <p className="text-[10px] text-zinc-400">Harga eceran ke pembeli.</p>
-          </div>
+          <p className="text-[10px] text-zinc-400">Harga eceran jual ke pembeli (per bungkus / pcs).</p>
         </div>
 
         {/* Margin Scheme Settings for Consignment */}
@@ -522,7 +494,7 @@ function ProductFormContent({ initialData, consignors, onClose, onSaved }: FormC
           </Label>
           <ProductMarginPreview
             ownerType={ownerType}
-            pcsPerPack={parseInt(pcsPerPack, 10) || 1}
+            pcsPerPack={1}
             marginInfo={marginPreview}
           />
         </div>

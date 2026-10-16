@@ -16,6 +16,7 @@ interface LineFormState {
   productId: number;
   inputMode: 'pack' | 'pcs';
   qtyPack: string;
+  pcsPerPack: string;
   qtyPcs: string;
   totalCost: string;
 }
@@ -82,13 +83,13 @@ function StockInFormContent({
       ? products.find((p) => p.id === defaultProdId)
       : availableProducts[0];
     const initialProdId = prod?.id ?? (products[0]?.id ?? 0);
-    const hasPack = (prod?.pcsPerPack ?? 1) > 1;
 
     return {
       productId: initialProdId,
-      inputMode: hasPack ? 'pack' : 'pcs',
+      inputMode: 'pcs',
       qtyPack: '1',
-      qtyPcs: hasPack ? String(prod?.pcsPerPack ?? 1) : '1',
+      pcsPerPack: '1',
+      qtyPcs: '1',
       totalCost: prod?.ownerType === 'own' ? '' : '0',
     };
   }
@@ -99,19 +100,20 @@ function StockInFormContent({
         productId: l.productId,
         inputMode: l.inputMode,
         qtyPack: l.qtyPack ? String(l.qtyPack) : '1',
+        pcsPerPack: l.pcsPerPackSnapshot ? String(l.pcsPerPackSnapshot) : '1',
         qtyPcs: String(l.qtyPcs),
         totalCost: l.ownerType === 'own' ? cleanDecimalTrailingZeros(l.totalCost) : '0',
       }));
     }
     const firstProd = products.find((p) => (initialData ? true : p.ownerType === 'own'));
     const firstId = firstProd?.id ?? (products[0]?.id ?? 0);
-    const hasPack = (firstProd?.pcsPerPack ?? 1) > 1;
     return [
       {
         productId: firstId,
-        inputMode: hasPack ? 'pack' : 'pcs',
+        inputMode: 'pcs',
         qtyPack: '1',
-        qtyPcs: hasPack ? String(firstProd?.pcsPerPack ?? 1) : '1',
+        pcsPerPack: '1',
+        qtyPcs: '1',
         totalCost: firstProd?.ownerType === 'own' ? '' : '0',
       },
     ];
@@ -138,9 +140,10 @@ function StockInFormContent({
     setLines([
       {
         productId: firstValid?.id ?? 0,
-        inputMode: (firstValid?.pcsPerPack ?? 1) > 1 ? 'pack' : 'pcs',
+        inputMode: 'pcs',
         qtyPack: '1',
-        qtyPcs: (firstValid?.pcsPerPack ?? 1) > 1 ? String(firstValid?.pcsPerPack ?? 1) : '1',
+        pcsPerPack: '1',
+        qtyPcs: '1',
         totalCost: firstValid?.ownerType === 'own' ? '' : '0',
       },
     ]);
@@ -148,7 +151,6 @@ function StockInFormContent({
 
   function handleLineProductChange(index: number, newProductId: number) {
     const prod = products.find((p) => p.id === newProductId);
-    const hasPack = (prod?.pcsPerPack ?? 1) > 1;
 
     setLines((prev) => {
       const next = [...prev];
@@ -157,9 +159,6 @@ function StockInFormContent({
       next[index] = {
         ...target,
         productId: newProductId,
-        inputMode: hasPack ? 'pack' : 'pcs',
-        qtyPack: '1',
-        qtyPcs: hasPack ? String(prod?.pcsPerPack ?? 1) : '1',
         totalCost: prod?.ownerType === 'own' ? (target.totalCost === '0' ? '' : target.totalCost) : '0',
       };
       return next;
@@ -171,14 +170,15 @@ function StockInFormContent({
       const next = [...prev];
       const target = next[index];
       if (!target) return prev;
-      const prod = products.find((p) => p.id === target.productId);
-      const packMultiplier = prod?.pcsPerPack ?? 1;
+      const packMultiplier = parseInt(target.pcsPerPack, 10) || 1;
 
       if (mode === 'pack') {
         const pQty = parseInt(target.qtyPack, 10) || 1;
         next[index] = {
           ...target,
           inputMode: 'pack',
+          qtyPack: target.qtyPack || '1',
+          pcsPerPack: target.pcsPerPack || '1',
           qtyPcs: String(pQty * packMultiplier),
         };
       } else {
@@ -196,14 +196,30 @@ function StockInFormContent({
       const next = [...prev];
       const target = next[index];
       if (!target) return prev;
-      const prod = products.find((p) => p.id === target.productId);
-      const packMultiplier = prod?.pcsPerPack ?? 1;
+      const packMultiplier = parseInt(target.pcsPerPack, 10) || 1;
       const parsed = parseInt(val, 10) || 0;
 
       next[index] = {
         ...target,
         qtyPack: val,
         qtyPcs: String(parsed * packMultiplier),
+      };
+      return next;
+    });
+  }
+
+  function handleLinePcsPerPackChange(index: number, val: string) {
+    setLines((prev) => {
+      const next = [...prev];
+      const target = next[index];
+      if (!target) return prev;
+      const parsedPack = parseInt(target.qtyPack, 10) || 0;
+      const parsedPcs = parseInt(val, 10) || 0;
+
+      next[index] = {
+        ...target,
+        pcsPerPack: val,
+        qtyPcs: String(parsedPack * parsedPcs),
       };
       return next;
     });
@@ -293,6 +309,11 @@ function StockInFormContent({
           setErrorMessage(`Baris ${i + 1} (${prod.name}): Jumlah pack minimal 1.`);
           return;
         }
+        const pPcs = parseInt(l.pcsPerPack, 10);
+        if (!Number.isInteger(pPcs) || pPcs < 1) {
+          setErrorMessage(`Baris ${i + 1} (${prod.name}): Isi per pack minimal 1 pcs.`);
+          return;
+        }
       } else {
         const pcsQty = parseInt(l.qtyPcs, 10);
         if (!Number.isInteger(pcsQty) || pcsQty < 1) {
@@ -315,6 +336,7 @@ function StockInFormContent({
         productId: l.productId,
         inputMode: l.inputMode,
         qtyPack: l.inputMode === 'pack' ? parseInt(l.qtyPack, 10) : null,
+        pcsPerPack: l.inputMode === 'pack' ? parseInt(l.pcsPerPack, 10) : null,
         qtyPcs: l.inputMode === 'pcs' ? parseInt(l.qtyPcs, 10) : null,
         totalCost: costStr,
       });
@@ -468,8 +490,6 @@ function StockInFormContent({
               {lines.map((line, idx) => {
                 const prod = products.find((p) => p.id === line.productId);
                 const isOwn = prod?.ownerType === 'own';
-                const pcsPerPack = prod?.pcsPerPack ?? 1;
-                const hasPackSupport = pcsPerPack > 1;
 
                 return (
                   <div
@@ -494,7 +514,7 @@ function StockInFormContent({
 
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
                       {/* Product selection */}
-                      <div className="sm:col-span-6 space-y-1">
+                      <div className="sm:col-span-5 space-y-1">
                         <label className="text-[11px] font-medium text-zinc-600">Produk</label>
                         <select
                           value={line.productId}
@@ -510,51 +530,69 @@ function StockInFormContent({
                       </div>
 
                       {/* Unit Mode & Quantity */}
-                      <div className="sm:col-span-3 space-y-1">
+                      <div className="sm:col-span-4 space-y-1">
                         <div className="flex items-center justify-between">
                           <label className="text-[11px] font-medium text-zinc-600">Kuantitas</label>
-                          {hasPackSupport && (
-                            <div className="flex items-center gap-1 text-[10px]">
-                              <button
-                                type="button"
-                                onClick={() => handleLineInputModeChange(idx, 'pack')}
-                                className={`px-1.5 py-0.5 rounded transition-colors ${
-                                  line.inputMode === 'pack'
-                                    ? 'bg-zinc-800 text-white font-bold'
-                                    : 'text-zinc-500 hover:bg-zinc-200'
-                                }`}
-                              >
-                                Pack
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleLineInputModeChange(idx, 'pcs')}
-                                className={`px-1.5 py-0.5 rounded transition-colors ${
-                                  line.inputMode === 'pcs'
-                                    ? 'bg-zinc-800 text-white font-bold'
-                                    : 'text-zinc-500 hover:bg-zinc-200'
-                                }`}
-                              >
-                                Pcs
-                              </button>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-1 text-[10px]">
+                            <button
+                              type="button"
+                              onClick={() => handleLineInputModeChange(idx, 'pack')}
+                              className={`px-1.5 py-0.5 rounded transition-colors ${
+                                line.inputMode === 'pack'
+                                  ? 'bg-zinc-800 text-white font-bold'
+                                  : 'text-zinc-500 hover:bg-zinc-200'
+                              }`}
+                            >
+                              Pack
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleLineInputModeChange(idx, 'pcs')}
+                              className={`px-1.5 py-0.5 rounded transition-colors ${
+                                line.inputMode === 'pcs'
+                                  ? 'bg-zinc-800 text-white font-bold'
+                                  : 'text-zinc-500 hover:bg-zinc-200'
+                              }`}
+                            >
+                              Pcs
+                            </button>
+                          </div>
                         </div>
 
                         {line.inputMode === 'pack' ? (
-                          <div className="space-y-0.5">
-                            <Input
-                              type="number"
-                              min="1"
-                              step="1"
-                              inputMode="numeric"
-                              value={line.qtyPack}
-                              onChange={(e) => handleLineQtyPackChange(idx, e.target.value)}
-                              placeholder="1"
-                              className="h-8 text-xs font-mono"
-                            />
-                            <p className="text-[10px] text-zinc-500 font-mono">
-                              × {pcsPerPack} = {line.qtyPcs} pcs
+                          <div className="space-y-1">
+                            <div className="grid grid-cols-2 gap-1.5">
+                              <div>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  inputMode="numeric"
+                                  value={line.qtyPack}
+                                  onChange={(e) => handleLineQtyPackChange(idx, e.target.value)}
+                                  placeholder="Jml Pack"
+                                  title="Jumlah Pack"
+                                  className="h-8 text-xs font-mono px-2"
+                                />
+                                <span className="text-[9px] text-zinc-400">Jml Pack</span>
+                              </div>
+                              <div>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  inputMode="numeric"
+                                  value={line.pcsPerPack}
+                                  onChange={(e) => handleLinePcsPerPackChange(idx, e.target.value)}
+                                  placeholder="Isi/Pack"
+                                  title="Isi per Pack"
+                                  className="h-8 text-xs font-mono px-2"
+                                />
+                                <span className="text-[9px] text-zinc-400">Isi/Pack</span>
+                              </div>
+                            </div>
+                            <p className="text-[10px] text-zinc-600 font-mono font-medium">
+                              = {line.qtyPcs || 0} pcs
                             </p>
                           </div>
                         ) : (

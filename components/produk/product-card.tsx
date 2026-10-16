@@ -28,11 +28,6 @@ export function ProductCard({ product, onEdit, onToggleStatus }: Props) {
             ownerType={product.ownerType}
             consignorName={product.consignorName}
           />
-          {product.pcsPerPack > 1 && (
-            <span className="text-[11px] font-mono text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded border border-zinc-200">
-              1 pack = {product.pcsPerPack} pcs
-            </span>
-          )}
         </div>
       </div>
 

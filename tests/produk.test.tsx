@@ -185,10 +185,6 @@ describe('ProductDialog', () => {
     );
 
     await user.type(screen.getByLabelText(/Nama Produk/i), 'Gery Salut Malkist');
-    const packInput = screen.getByLabelText(/Isi per Pack/i);
-    await user.clear(packInput);
-    await user.type(packInput, '10');
-
     await user.type(screen.getByLabelText(/Harga Jual per Pcs/i), '1500');
 
     await user.click(screen.getByRole('button', { name: 'Tambah Produk' }));
@@ -198,7 +194,7 @@ describe('ProductDialog', () => {
         name: 'Gery Salut Malkist',
         ownerType: 'own',
         consignorId: null,
-        pcsPerPack: 10,
+        pcsPerPack: 1,
         sellPrice: '1500',
         marginType: null,
         marginValue: null,

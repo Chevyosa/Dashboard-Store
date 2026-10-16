@@ -3,11 +3,11 @@ import type { ProductMarginInfo } from '@/lib/api';
 
 interface Props {
   ownerType: 'own' | 'consignor';
-  pcsPerPack: number;
+  pcsPerPack?: number;
   marginInfo: ProductMarginInfo | null;
 }
 
-export function ProductMarginPreview({ ownerType, pcsPerPack, marginInfo }: Props) {
+export function ProductMarginPreview({ ownerType, pcsPerPack = 1, marginInfo }: Props) {
   if (ownerType === 'own') {
     if (marginInfo && marginInfo.ownerMarginPerPcs) {
       return (
