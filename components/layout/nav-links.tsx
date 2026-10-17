@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: '/loss', label: 'Loss' },
   { href: '/opname', label: 'Opname' },
   { href: '/payout', label: 'Payout' },
+  { href: '/take-profit', label: 'Take Profit' },
   { href: '/audit', label: 'Riwayat' },
 ];
 

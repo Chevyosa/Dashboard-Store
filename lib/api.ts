@@ -1247,6 +1247,113 @@ export async function getAuditLogDetail(id: number): Promise<{ data: AuditLogIte
   return apiFetch<{ data: AuditLogItem }>(`/api/v1/audit-logs/${id}`);
 }
 
+// ---------------------------------------------------------------------------
+// Take Profit API (Withdrawals & Safe Working Capital Buffer)
+// ---------------------------------------------------------------------------
+
+export type TakeProfitPaymentMethod = 'cash' | 'transfer';
+
+export interface TakeProfitItem {
+  id: number;
+  opnameId: number | null;
+  opnameDate: string | null;
+  amount: string;
+  withdrawalDate: string;
+  paymentMethod: TakeProfitPaymentMethod;
+  note: string | null;
+  createdBy: number | null;
+  createdByUsername: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TakeProfitOverview {
+  latestOpname: {
+    id: number;
+    opnameDate: string;
+    realCash: string;
+  } | null;
+  totalUnpaidConsignorBalance: string;
+  minWorkingCapital: string;
+  withdrawnCurrentPeriod: string;
+  totalWithdrawnAllTime: string;
+  availableToWithdraw: string;
+  rawBalance: string;
+  isSafe: boolean;
+  warningReason: string | null;
+}
+
+export interface ListTakeProfitsParams {
+  page?: number;
+  limit?: number;
+  opnameId?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface ListTakeProfitsResponse {
+  data: TakeProfitItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateTakeProfitPayload {
+  opnameId?: number | null;
+  amount: string;
+  withdrawalDate: string;
+  paymentMethod: TakeProfitPaymentMethod;
+  note?: string | null;
+}
+
+export async function getTakeProfitOverview(): Promise<{ data: TakeProfitOverview }> {
+  return apiFetch<{ data: TakeProfitOverview }>('/api/v1/take-profits/overview');
+}
+
+export async function updateWorkingCapital(
+  minWorkingCapital: string,
+): Promise<{ data: { minWorkingCapital: string }; message: string }> {
+  return apiFetch<{ data: { minWorkingCapital: string }; message: string }>(
+    '/api/v1/take-profits/settings/working-capital',
+    {
+      method: 'PUT',
+      body: { minWorkingCapital },
+    },
+  );
+}
+
+export async function listTakeProfits(
+  params: ListTakeProfitsParams = {},
+): Promise<ListTakeProfitsResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set('page', String(params.page));
+  if (params.limit !== undefined) searchParams.set('limit', String(params.limit));
+  if (params.opnameId !== undefined) searchParams.set('opnameId', String(params.opnameId));
+  if (params.startDate) searchParams.set('startDate', params.startDate);
+  if (params.endDate) searchParams.set('endDate', params.endDate);
+  const qs = searchParams.toString();
+  return apiFetch<ListTakeProfitsResponse>(`/api/v1/take-profits${qs ? `?${qs}` : ''}`);
+}
+
+export async function createTakeProfit(
+  payload: CreateTakeProfitPayload,
+): Promise<{ data: TakeProfitItem; message: string }> {
+  return apiFetch<{ data: TakeProfitItem; message: string }>('/api/v1/take-profits', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export async function deleteTakeProfit(id: number): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/v1/take-profits/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+
 
 
 
