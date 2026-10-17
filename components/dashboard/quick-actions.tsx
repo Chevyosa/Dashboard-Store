@@ -1,32 +1,45 @@
 import React from 'react';
 import Link from 'next/link';
+import {
+  RiFileList3Line,
+  RiInboxArchiveLine,
+  RiErrorWarningLine,
+  RiHandCoinLine,
+} from '@remixicon/react';
 
 export function QuickActions() {
   const actions = [
     {
       title: 'Tutup Periode / Opname',
-      desc: 'Hitung stok fisik & finalisasi omset toko',
       href: '/opname',
-      badge: 'Rekomendasi Rutin',
-      color: 'border-l-[#D97757]',
+      icon: RiFileList3Line,
+      iconColor: 'text-[#D97757]',
+      bgColor: 'bg-orange-50 group-hover:bg-[#D97757]/15',
+      borderColor: 'border-orange-100/80',
     },
     {
       title: 'Catat Barang Masuk',
-      desc: 'Kulakan barang sendiri atau titipan baru',
       href: '/barang-masuk',
-      color: 'border-l-blue-500',
+      icon: RiInboxArchiveLine,
+      iconColor: 'text-blue-600',
+      bgColor: 'bg-blue-50 group-hover:bg-blue-100/60',
+      borderColor: 'border-blue-100/80',
     },
     {
       title: 'Catat Kerugian / Loss',
-      desc: 'Barang basi, expired, rusak, atau hilang',
       href: '/loss',
-      color: 'border-l-amber-500',
+      icon: RiErrorWarningLine,
+      iconColor: 'text-amber-600',
+      bgColor: 'bg-amber-50 group-hover:bg-amber-100/60',
+      borderColor: 'border-amber-100/80',
     },
     {
       title: 'Buku Kas & Bayar Penitip',
-      desc: 'Setor bagi hasil & catat bukti pelunasan',
       href: '/payout',
-      color: 'border-l-emerald-500',
+      icon: RiHandCoinLine,
+      iconColor: 'text-emerald-600',
+      bgColor: 'bg-emerald-50 group-hover:bg-emerald-100/60',
+      borderColor: 'border-emerald-100/80',
     },
   ];
 
@@ -35,21 +48,26 @@ export function QuickActions() {
       <h3 className="text-xs font-semibold text-zinc-600">
         Aksi Cepat Operasional
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {actions.map((act) => (
-          <Link
-            key={act.href}
-            href={act.href}
-            className={`group rounded-lg border border-zinc-200 border-l-4 ${act.color} bg-white p-4 shadow-2xs hover:shadow-xs hover:border-zinc-300 transition-all block`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-900 group-hover:text-[#D97757] transition-colors">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        {actions.map((act) => {
+          const Icon = act.icon;
+          return (
+            <Link
+              key={act.href}
+              href={act.href}
+              className="group flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-xl border border-zinc-200 bg-white hover:border-[#D97757]/40 hover:shadow-xs transition-all active:scale-[0.98] min-h-[96px] shadow-2xs"
+            >
+              <div
+                className={`size-10 sm:size-11 rounded-xl flex items-center justify-center ${act.bgColor} ${act.iconColor} ${act.borderColor} border mb-2 group-hover:scale-105 transition-transform shrink-0`}
+              >
+                <Icon className="size-5 sm:size-6" />
+              </div>
+              <span className="text-xs font-bold text-zinc-800 group-hover:text-[#D97757] transition-colors leading-tight">
                 {act.title}
               </span>
-            </div>
-            <p className="mt-1 text-[11px] text-zinc-500">{act.desc}</p>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
