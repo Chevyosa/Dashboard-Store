@@ -102,21 +102,44 @@ const mockSummaryData: apiModule.DashboardSummaryResponse = {
     profitDiff: '-10000.0000',
     invariantI3Satisfied: true,
   },
+  takeProfit: {
+    latestOpname: {
+      id: 1,
+      opnameDate: '2026-10-02',
+      realCash: '150000.0000',
+      totalPayoutDue: '45000.0000',
+    },
+    totalPayout: '45000.0000',
+    payoutPaid: '10000.0000',
+    payoutUnpaid: '35000.0000',
+    payoutStatus: 'partial',
+    totalUnpaidConsignorBalance: '35000.0000',
+    minWorkingCapital: '40000.0000',
+    withdrawnCurrentPeriod: '0.0000',
+    totalWithdrawnAllTime: '0.0000',
+    availableToWithdraw: '65000.0000',
+    rawBalance: '65000.0000',
+    isSafe: true,
+    warningReason: null,
+  },
 };
 
 describe('DashboardKPICards', () => {
-  it('renders turnover, profit A, loss, and pending payout with Rupiah format', () => {
+  it('renders turnover, halal take profit, loss, and pending payout with Rupiah format', () => {
     render(
       <DashboardKPICards
         overview={mockSummaryData.overview}
         latestReconciliation={mockSummaryData.latestReconciliation}
+        takeProfit={mockSummaryData.takeProfit}
       />
     );
 
     expect(screen.getByText('Omset Penjualan')).toBeInTheDocument();
     expect(screen.getByText('Rp 150.000')).toBeInTheDocument();
     expect(screen.getByText('25 Pcs Terjual')).toBeInTheDocument();
-    expect(screen.getByText('Rp 43.000')).toBeInTheDocument();
+    expect(screen.getByText('Laba Halal Ditarik')).toBeInTheDocument();
+    expect(screen.getByText('Aman Ditarik')).toBeInTheDocument();
+    expect(screen.getByText('Rp 65.000')).toBeInTheDocument();
     expect(screen.getByText('Rp 2.000')).toBeInTheDocument();
     expect(screen.getByText('Rp 35.000')).toBeInTheDocument();
   });

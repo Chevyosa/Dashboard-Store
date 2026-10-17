@@ -1,13 +1,19 @@
 import React from 'react';
+import Link from 'next/link';
 import { formatRupiah } from '@/lib/format';
-import type { DashboardOverview, DashboardReconciliationResult } from '@/lib/api';
+import type { DashboardOverview, DashboardReconciliationResult, TakeProfitOverview } from '@/lib/api';
 
 interface DashboardKPICardsProps {
   overview: DashboardOverview;
   latestReconciliation: DashboardReconciliationResult | null;
+  takeProfit?: TakeProfitOverview | null;
 }
 
-export function DashboardKPICards({ overview, latestReconciliation }: DashboardKPICardsProps) {
+export function DashboardKPICards({
+  overview,
+  latestReconciliation,
+  takeProfit,
+}: DashboardKPICardsProps) {
   const latest = overview.latestOpname;
   const turnover = latest ? latest.totalTurnover : '0.0000';
   const soldQty = latest ? latest.totalSoldQty : 0;
@@ -35,21 +41,57 @@ export function DashboardKPICards({ overview, latestReconciliation }: DashboardK
         </p>
       </div>
 
-      {/* 2. Laba Bersih Toko (Profit A) */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2">
+      {/* 2. Laba Halal Ditarik (Take Profit) */}
+      <Link
+        href="/take-profit"
+        className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2 hover:border-[#D97757]/60 hover:shadow-xs transition-all group block"
+      >
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Laba Bersih Toko</span>
-          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-            Profit A (Barang)
+          <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider group-hover:text-[#D97757] transition-colors">
+            Laba Halal Ditarik
+          </span>
+          {takeProfit ? (
+            takeProfit.isSafe ? (
+              <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                Aman Ditarik
+              </span>
+            ) : (
+              <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+                Tahan Dulu
+              </span>
+            )
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+              Take Profit
+            </span>
+          )}
+        </div>
+        <div
+          className={`text-2xl font-bold tracking-tight font-sans ${
+            takeProfit && !takeProfit.isSafe && Number(takeProfit.availableToWithdraw) <= 0
+              ? 'text-amber-700'
+              : 'text-emerald-700'
+          }`}
+        >
+          {takeProfit
+            ? formatRupiah(takeProfit.availableToWithdraw)
+            : profitA
+            ? formatRupiah(profitA)
+            : '—'}
+        </div>
+        <div className="flex items-center justify-between text-xs text-zinc-500">
+          <span className="truncate">
+            {takeProfit
+              ? takeProfit.isSafe
+                ? 'Bersih setelah payout & modal belanja'
+                : 'Belum cukup modal belanja toko'
+              : 'Kas bersih yang halal ditarik owner'}
+          </span>
+          <span className="text-[11px] text-[#D97757] font-medium group-hover:translate-x-0.5 transition-transform shrink-0 ml-1">
+            Tarik →
           </span>
         </div>
-        <div className={`text-2xl font-bold tracking-tight font-sans ${profitA && Number(profitA) < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
-          {profitA ? formatRupiah(profitA) : '—'}
-        </div>
-        <p className="text-xs text-zinc-500">
-          Margin penjualan dikurangi HPP & loss barang
-        </p>
-      </div>
+      </Link>
 
       {/* 3. Kerugian Barang (Loss) */}
       <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2">

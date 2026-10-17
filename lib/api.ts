@@ -1157,6 +1157,7 @@ export interface DashboardSummaryResponse {
   recentOpnames: DashboardRecentOpname[];
   opnameOptions: DashboardOpnameOption[];
   latestReconciliation: DashboardReconciliationResult | null;
+  takeProfit?: TakeProfitOverview | null;
 }
 
 export interface CalculateReconciliationPayload {

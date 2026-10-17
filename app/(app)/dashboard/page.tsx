@@ -2,7 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getDashboardSummary, type DashboardSummaryResponse } from '@/lib/api';
+import {
+  getDashboardSummary,
+  getTakeProfitOverview,
+  type DashboardSummaryResponse,
+} from '@/lib/api';
 import { formatDateIndo, formatRupiah } from '@/lib/format';
 import { DashboardKPICards } from '@/components/dashboard/dashboard-kpi-cards';
 import { ReconciliationCard } from '@/components/dashboard/reconciliation-card';
@@ -20,8 +24,14 @@ export default function DashboardPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await getDashboardSummary();
-      setData(res.data);
+      const [summaryRes, takeProfitRes] = await Promise.all([
+        getDashboardSummary(),
+        getTakeProfitOverview().catch(() => null),
+      ]);
+      setData({
+        ...summaryRes.data,
+        takeProfit: summaryRes.data.takeProfit ?? takeProfitRes?.data ?? null,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal memuat ringkasan dashboard.');
     } finally {
@@ -116,6 +126,7 @@ export default function DashboardPage() {
       <DashboardKPICards
         overview={overview}
         latestReconciliation={latestReconciliation}
+        takeProfit={data.takeProfit}
       />
 
       {/* Dual Profit & Real Cash Reconciliation Panel */}
