@@ -66,7 +66,7 @@ export function StockInCard({ stockIn, onEdit, onDelete }: Props) {
       {/* Metrics */}
       <div className="grid grid-cols-2 gap-2 pt-1 border-t border-zinc-100">
         <div>
-          <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">
+          <span className="text-[10px] text-zinc-500 font-medium block">
             Kuantitas
           </span>
           <span className="font-mono text-sm font-bold text-zinc-900">
@@ -75,7 +75,7 @@ export function StockInCard({ stockIn, onEdit, onDelete }: Props) {
           <span className="text-[10px] text-zinc-500 ml-1">({stockIn.linesCount} item)</span>
         </div>
         <div className="text-right">
-          <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">
+          <span className="text-[10px] text-zinc-500 font-medium block">
             Modal Belanja
           </span>
           <span className="font-mono text-sm font-bold text-zinc-900">
@@ -130,7 +130,7 @@ export function StockInCard({ stockIn, onEdit, onDelete }: Props) {
             size="sm"
             disabled={isClosed}
             onClick={() => onEdit(stockIn)}
-            className="h-7 text-xs px-2 text-zinc-600 disabled:opacity-40"
+            className="h-8 text-xs px-2.5 text-zinc-600 hover:text-zinc-900 disabled:opacity-40"
           >
             Ubah
           </Button>
@@ -140,7 +140,7 @@ export function StockInCard({ stockIn, onEdit, onDelete }: Props) {
             size="sm"
             disabled={isClosed}
             onClick={() => onDelete(stockIn)}
-            className="h-7 text-xs px-2 text-red-600 hover:bg-red-50 disabled:opacity-40"
+            className="h-8 text-xs px-2.5 text-red-600 hover:bg-red-50 disabled:opacity-40"
           >
             Hapus
           </Button>

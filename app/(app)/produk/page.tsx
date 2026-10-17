@@ -180,7 +180,7 @@ export default function ProdukPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+          <div className="text-[11px] font-medium text-zinc-500">
             Total Produk
           </div>
           <div className="mt-1 font-mono text-xl font-bold text-zinc-900">
@@ -189,7 +189,7 @@ export default function ProdukPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-600 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-zinc-600 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-zinc-500" />
             Milik Sendiri
           </div>
@@ -199,7 +199,7 @@ export default function ProdukPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-[#D97757] uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-[#D97757] flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-[#D97757]" />
             Titipan
           </div>
@@ -209,7 +209,7 @@ export default function ProdukPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-zinc-300" />
             Nonaktif
           </div>

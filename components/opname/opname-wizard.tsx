@@ -469,7 +469,7 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
                         <button
                           type="button"
                           onClick={() => setQuantity(p.productId, currentPhysical - 1)}
-                          className="size-8 flex items-center justify-center text-sm font-bold text-zinc-600 hover:bg-zinc-100 active:bg-zinc-200 rounded-l-lg transition-colors"
+                          className="size-10 sm:size-8 flex items-center justify-center text-base sm:text-sm font-bold text-zinc-600 hover:bg-zinc-100 active:bg-zinc-200 rounded-l-lg transition-colors"
                         >
                           −
                         </button>
@@ -478,12 +478,12 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
                           min="0"
                           value={currentPhysical}
                           onChange={(e) => setQuantity(p.productId, Number(e.target.value))}
-                          className="w-14 text-center font-mono font-bold text-sm text-zinc-900 focus:outline-none"
+                          className="w-14 h-10 sm:h-8 text-center font-mono font-bold text-sm text-zinc-900 focus:outline-none"
                         />
                         <button
                           type="button"
                           onClick={() => setQuantity(p.productId, currentPhysical + 1)}
-                          className="size-8 flex items-center justify-center text-sm font-bold text-zinc-600 hover:bg-zinc-100 active:bg-zinc-200 rounded-r-lg transition-colors"
+                          className="size-10 sm:size-8 flex items-center justify-center text-base sm:text-sm font-bold text-zinc-600 hover:bg-zinc-100 active:bg-zinc-200 rounded-r-lg transition-colors"
                         >
                           +
                         </button>
@@ -552,62 +552,120 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
             </div>
           )}
 
-          <div className="rounded-xl border border-zinc-200 overflow-hidden">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
-                <tr>
-                  <th className="py-2.5 px-3">Produk</th>
-                  <th className="py-2.5 px-2 text-right">Teoritis</th>
-                  <th className="py-2.5 px-2 text-right">Fisik</th>
-                  <th className="py-2.5 px-2 text-right">Selisih</th>
-                  <th className="py-2.5 px-2 text-right">Loss Tercatat</th>
-                  <th className="py-2.5 px-3 text-right font-bold text-zinc-900">Otomatis Terjual</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {diffProducts.length === 0 ? (
+          {/* Desktop Table View */}
+          <div className="hidden sm:block rounded-xl border border-zinc-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
                   <tr>
-                    <td colSpan={6} className="py-6 text-center text-zinc-400">
-                      Semua stok fisik sama persis dengan stok teoritis (tidak ada selisih).
-                    </td>
+                    <th className="py-2.5 px-3">Produk</th>
+                    <th className="py-2.5 px-2 text-right">Teoritis</th>
+                    <th className="py-2.5 px-2 text-right">Fisik</th>
+                    <th className="py-2.5 px-2 text-right">Selisih</th>
+                    <th className="py-2.5 px-2 text-right">Loss Tercatat</th>
+                    <th className="py-2.5 px-3 text-right font-bold text-zinc-900">Otomatis Terjual</th>
                   </tr>
-                ) : (
-                  diffProducts.map((p) => {
-                    const physical = physicalCounts[p.productId] ?? 0;
-                    const diff = p.expectedQty - physical;
-                    const sold = diff - p.lossQty;
-                    const isError = sold < 0;
+                </thead>
+                <tbody className="divide-y divide-zinc-100">
+                  {diffProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-6 text-center text-zinc-400">
+                        Semua stok fisik sama persis dengan stok teoritis (tidak ada selisih).
+                      </td>
+                    </tr>
+                  ) : (
+                    diffProducts.map((p) => {
+                      const physical = physicalCounts[p.productId] ?? 0;
+                      const diff = p.expectedQty - physical;
+                      const sold = diff - p.lossQty;
+                      const isError = sold < 0;
 
-                    return (
-                      <tr key={p.productId} className={isError ? 'bg-red-50/50' : ''}>
-                        <td className="py-2.5 px-3 font-medium text-zinc-900">
-                          {p.productName}
-                        </td>
-                        <td className="py-2.5 px-2 text-right font-mono text-zinc-600">
-                          {p.expectedQty}
-                        </td>
-                        <td className="py-2.5 px-2 text-right font-mono text-zinc-900 font-semibold">
-                          {physical}
-                        </td>
-                        <td className="py-2.5 px-2 text-right font-mono font-semibold text-amber-800">
-                          {diff} pcs
-                        </td>
-                        <td className="py-2.5 px-2 text-right font-mono text-zinc-600">
-                          {p.lossQty > 0 ? `${p.lossQty} pcs` : '0'}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-zinc-900">
-                          {isError ? (
-                            <span className="text-red-600 font-bold">{sold} (Error)</span>
-                          ) : (
-                            `${sold} pcs`
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                      return (
+                        <tr key={p.productId} className={isError ? 'bg-red-50/50' : ''}>
+                          <td className="py-2.5 px-3 font-medium text-zinc-900">
+                            {p.productName}
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-mono text-zinc-600">
+                            {p.expectedQty}
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-mono text-zinc-900 font-semibold">
+                            {physical}
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-mono font-semibold text-amber-800">
+                            {diff} pcs
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-mono text-zinc-600">
+                            {p.lossQty > 0 ? `${p.lossQty} pcs` : '0'}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono font-bold text-zinc-900">
+                            {isError ? (
+                              <span className="text-red-600 font-bold">{sold} (Error)</span>
+                            ) : (
+                              `${sold} pcs`
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="sm:hidden space-y-2.5">
+            {diffProducts.length === 0 ? (
+              <div className="rounded-xl border border-zinc-200 bg-white p-6 text-center text-xs text-zinc-500">
+                Semua stok fisik sama persis dengan stok teoritis (tidak ada selisih).
+              </div>
+            ) : (
+              diffProducts.map((p) => {
+                const physical = physicalCounts[p.productId] ?? 0;
+                const diff = p.expectedQty - physical;
+                const sold = diff - p.lossQty;
+                const isError = sold < 0;
+
+                return (
+                  <div
+                    key={p.productId}
+                    className={`p-3.5 rounded-xl border space-y-2 ${
+                      isError ? 'border-red-300 bg-red-50/50' : 'border-zinc-200 bg-white shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-xs text-zinc-900">{p.productName}</span>
+                      <span
+                        className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
+                          isError ? 'bg-red-100 text-red-700' : 'bg-zinc-100 text-zinc-900'
+                        }`}
+                      >
+                        {isError ? `${sold} (Error)` : `${sold} pcs terjual`}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-1 text-[11px] bg-zinc-50 p-2 rounded-lg text-center">
+                      <div>
+                        <span className="text-[10px] text-zinc-400 block">Teoritis</span>
+                        <span className="font-mono font-medium text-zinc-700">{p.expectedQty}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-400 block">Fisik</span>
+                        <span className="font-mono font-bold text-zinc-900">{physical}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-400 block">Selisih</span>
+                        <span className="font-mono font-semibold text-amber-800">−{diff}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-400 block">Loss</span>
+                        <span className="font-mono text-zinc-600">{p.lossQty}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
@@ -875,24 +933,24 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-100">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-zinc-100">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setStep(3)}
-              className="text-xs self-start sm:self-auto"
+              className="text-xs w-full sm:w-auto h-9"
             >
-              ← Kembali ke Review
+              Kembali ke Review
             </Button>
 
-            <div className="flex items-center gap-2 self-end sm:self-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
               <Button
                 type="button"
                 variant="outline"
                 disabled={submitting}
                 onClick={() => void handleSaveDraft()}
-                className="h-9 text-xs px-3 font-semibold border-amber-300 text-amber-800 hover:bg-amber-50"
+                className="h-9 text-xs px-3 font-semibold border-amber-300 text-amber-800 hover:bg-amber-50 w-full sm:w-auto"
               >
                 {submitting ? 'Menyimpan...' : 'Simpan sebagai Draf'}
               </Button>
@@ -901,7 +959,7 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
                 type="button"
                 disabled={submitting}
                 onClick={() => void handleFinalize()}
-                className="h-9 px-4 text-xs font-bold bg-[#D97757] hover:bg-[#c26243] text-white shadow-xs"
+                className="h-9 px-4 text-xs font-bold bg-[#D97757] hover:bg-[#c26243] text-white shadow-xs w-full sm:w-auto"
               >
                 {submitting ? 'Memproses...' : 'Finalisasi & Tutup Periode'}
               </Button>

@@ -115,7 +115,8 @@ function StockReturnFormContent({
   }
 
   return (
-    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl border border-zinc-200 space-y-4">
+    <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-xl bg-white p-5 sm:p-6 shadow-xl border border-zinc-200 space-y-4 max-h-[92dvh] overflow-y-auto">
+      <div className="w-12 h-1 bg-zinc-200 rounded-full mx-auto sm:hidden -mt-1 mb-2" />
       <div className="space-y-1">
         <h2 className="text-base font-bold text-zinc-900">
           {isEditing ? 'Ubah Retur Penitip' : 'Catat Retur Penitip'}
@@ -152,7 +153,7 @@ function StockReturnFormContent({
               disabled={isEditing}
               value={productId ?? ''}
               onChange={(e) => setProductId(Number(e.target.value))}
-              className="w-full h-9 rounded-md border border-zinc-200 bg-white px-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40 disabled:bg-zinc-100"
+              className="w-full h-10 sm:h-9 rounded-md border border-zinc-200 bg-white px-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40 disabled:bg-zinc-100"
             >
               {consignorProducts.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -178,7 +179,7 @@ function StockReturnFormContent({
               value={qtyPcs}
               onChange={(e) => setQtyPcs(e.target.value)}
               placeholder="1"
-              className="h-9 text-xs font-mono"
+              className="h-10 sm:h-9 text-xs font-mono"
             />
           </div>
 
@@ -192,7 +193,7 @@ function StockReturnFormContent({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="h-9 text-xs font-mono"
+              className="h-10 sm:h-9 text-xs font-mono"
             />
           </div>
         </div>
@@ -208,7 +209,7 @@ function StockReturnFormContent({
             placeholder="Contoh: Ditarik karena tidak laku, kemasan sobek"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="h-9 text-xs"
+            className="h-10 sm:h-9 text-xs"
           />
         </div>
 
@@ -219,14 +220,14 @@ function StockReturnFormContent({
             variant="outline"
             onClick={onClose}
             disabled={submitting}
-            className="h-8 text-xs px-3"
+            className="h-10 sm:h-8 text-xs px-3"
           >
             Batal
           </Button>
           <Button
             type="submit"
             disabled={submitting || consignorProducts.length === 0}
-            className="h-8 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
+            className="h-10 sm:h-8 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
           >
             {submitting ? 'Menyimpan...' : isEditing ? 'Simpan Perubahan' : 'Catat Retur'}
           </Button>
@@ -249,7 +250,7 @@ export function StockReturnDialog({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs"
     >
       <StockReturnFormContent
         key={initialData ? `return-${initialData.id}` : 'return-create'}

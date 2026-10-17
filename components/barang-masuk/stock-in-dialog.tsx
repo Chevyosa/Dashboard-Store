@@ -373,9 +373,9 @@ function StockInFormContent({
   }
 
   return (
-    <div className="w-full max-w-2xl my-auto rounded-xl bg-white p-4 sm:p-6 shadow-xl border border-zinc-200 space-y-4 max-h-[90vh] flex flex-col">
+    <div className="w-full max-w-2xl rounded-t-2xl sm:rounded-xl bg-white p-4 sm:p-6 shadow-xl border border-zinc-200 max-h-[92dvh] flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="space-y-1">
+      <div className="space-y-1 pb-2 border-b border-zinc-100 shrink-0">
         <h2 className="text-base font-bold text-zinc-900">
           {isEditing ? 'Ubah Barang Masuk' : 'Catat Barang Masuk'}
         </h2>
@@ -678,20 +678,20 @@ function StockInFormContent({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100">
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border-t border-zinc-100 p-3 sm:p-4 -mx-4 sm:-mx-6 -mb-4 sm:-mb-6 flex items-center justify-end gap-2 shrink-0">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={submitting}
-            className="h-8 text-xs px-3"
+            className="h-9 text-xs px-3"
           >
             Batal
           </Button>
           <Button
             type="submit"
             disabled={submitting || availableProducts.length === 0}
-            className="h-8 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
+            className="h-9 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
           >
             {submitting ? 'Menyimpan...' : isEditing ? 'Simpan Perubahan' : 'Catat Barang Masuk'}
           </Button>
@@ -714,7 +714,7 @@ export function StockInDialog({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto"
     >
       <StockInFormContent
         key={initialData ? `stockin-${initialData.id}` : 'stockin-create'}

@@ -28,7 +28,7 @@ export function DashboardKPICards({
       {/* 1. Omset Penjualan */}
       <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Omset Penjualan</span>
+          <span className="text-xs font-semibold text-zinc-600">Omset Penjualan</span>
           <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700">
             {latest ? `${soldQty} Pcs Terjual` : 'Belum Ada Opname'}
           </span>
@@ -47,7 +47,7 @@ export function DashboardKPICards({
         className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2 hover:border-[#D97757]/60 hover:shadow-xs transition-all group block"
       >
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider group-hover:text-[#D97757] transition-colors">
+          <span className="text-xs font-semibold text-zinc-600 group-hover:text-[#D97757] transition-colors">
             Laba Halal Ditarik
           </span>
           {takeProfit ? (
@@ -87,8 +87,8 @@ export function DashboardKPICards({
                 : 'Belum cukup modal belanja toko'
               : 'Kas bersih yang halal ditarik owner'}
           </span>
-          <span className="text-[11px] text-[#D97757] font-medium group-hover:translate-x-0.5 transition-transform shrink-0 ml-1">
-            Tarik →
+          <span className="text-[11px] text-[#D97757] font-semibold shrink-0 ml-1">
+            Buka
           </span>
         </div>
       </Link>
@@ -96,7 +96,7 @@ export function DashboardKPICards({
       {/* 3. Kerugian Barang (Loss) */}
       <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Kerugian Barang (Loss)</span>
+          <span className="text-xs font-semibold text-zinc-600">Kerugian Barang (Loss)</span>
           <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
             {lossQty} Pcs Rusak/Basi
           </span>
@@ -112,7 +112,7 @@ export function DashboardKPICards({
       {/* 4. Kewajiban Payout Penitip */}
       <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Kewajiban Penitip</span>
+          <span className="text-xs font-semibold text-zinc-600">Kewajiban Penitip</span>
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${Number(unpaidPayout) > 0 ? 'bg-rose-50 text-rose-700' : 'bg-zinc-100 text-zinc-600'}`}>
             {Number(unpaidPayout) > 0 ? 'Perlu Disetor' : 'Lunas'}
           </span>

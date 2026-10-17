@@ -100,8 +100,8 @@ function PaymentFormContent({
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-zinc-200">
-      <div className="flex items-center justify-between pb-3 border-b border-zinc-100 mb-4">
+    <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-xl border border-zinc-200 max-h-[92dvh] overflow-y-auto flex flex-col">
+      <div className="flex items-center justify-between pb-3 border-b border-zinc-100 mb-4 shrink-0">
         <div>
           <h2 className="text-sm font-bold text-zinc-900">Catat Pembayaran Hak Penitip</h2>
           <p className="text-[11px] text-zinc-500">
@@ -241,20 +241,20 @@ function PaymentFormContent({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-100">
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border-t border-zinc-100 p-3 sm:p-4 -mx-4 sm:-mx-6 -mb-4 sm:-mb-6 flex items-center justify-end gap-2 shrink-0">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={submitting}
-            className="h-8 text-xs px-3"
+            className="h-9 text-xs px-3"
           >
             Batal
           </Button>
           <Button
             type="submit"
             disabled={submitting || !consignorId}
-            className="h-8 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
+            className="h-9 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
           >
             {submitting ? 'Menyimpan...' : 'Simpan Pembayaran'}
           </Button>
@@ -277,7 +277,7 @@ export function PaymentDialog({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs"
     >
       <PaymentFormContent
         key={selectedConsignorId ? `pay-${selectedConsignorId}` : 'pay-new'}

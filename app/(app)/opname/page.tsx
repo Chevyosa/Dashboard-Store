@@ -215,7 +215,7 @@ export default function OpnamePage() {
           {/* KPI Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider block">
+              <span className="text-[11px] font-medium text-zinc-500 block">
                 Total Opname Selesai
               </span>
               <div className="mt-1 font-mono text-xl font-bold text-zinc-900">
@@ -227,7 +227,7 @@ export default function OpnamePage() {
             </div>
 
             <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider block">
+              <span className="text-[11px] font-medium text-zinc-500 block">
                 Total Barang Terjual
               </span>
               <div className="mt-1 font-mono text-xl font-bold text-zinc-900">
@@ -239,7 +239,7 @@ export default function OpnamePage() {
             </div>
 
             <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs col-span-2 sm:col-span-1">
-              <span className="text-[11px] font-medium text-orange-700 uppercase tracking-wider block">
+              <span className="text-[11px] font-medium text-orange-700 block">
                 Prinsip Pure Opname
               </span>
               <div className="mt-1 text-xs font-semibold text-zinc-800">
@@ -367,23 +367,24 @@ export default function OpnamePage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-3 bg-black/40 backdrop-blur-xs"
         >
-          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl border border-zinc-200 space-y-3">
+          <div className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-xl bg-white p-5 shadow-xl border border-zinc-200 space-y-3">
+            <div className="w-12 h-1 bg-zinc-200 rounded-full mx-auto sm:hidden -mt-1 mb-2" />
             <h2 className="text-sm font-bold text-zinc-900">Hapus Draf Opname?</h2>
             <p className="text-xs text-zinc-600">
               Apakah Anda yakin ingin menghapus draf opname tanggal{' '}
               <strong>{formatDateIndo(draftToDelete.opnameDate)}</strong>? Hitungan fisik yang
               belum difinalisasi akan hilang.
             </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 disabled={deleting}
                 onClick={() => setDraftToDelete(null)}
-                className="text-xs"
+                className="h-10 sm:h-8 text-xs px-3"
               >
                 Batal
               </Button>
@@ -392,7 +393,7 @@ export default function OpnamePage() {
                 size="sm"
                 disabled={deleting}
                 onClick={() => void handleConfirmDeleteDraft()}
-                className="text-xs bg-red-600 hover:bg-red-700 text-white font-medium"
+                className="h-10 sm:h-8 text-xs bg-red-600 hover:bg-red-700 text-white font-medium px-4"
               >
                 {deleting ? 'Menghapus...' : 'Ya, Hapus Draf'}
               </Button>

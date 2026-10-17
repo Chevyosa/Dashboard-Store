@@ -25,7 +25,7 @@ export function PendingPayoutsCard({ consignors }: PendingPayoutsCardProps) {
           href="/payout"
           className="text-xs font-medium text-[#D97757] hover:underline"
         >
-          Lihat Buku Kas →
+          Buka Buku Kas
         </Link>
       </div>
 

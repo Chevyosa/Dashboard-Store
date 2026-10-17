@@ -186,7 +186,7 @@ export default function LossPage() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-zinc-500 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-zinc-400" />
             Total Loss (Terbuka)
           </div>
@@ -199,7 +199,7 @@ export default function LossPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-700 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-zinc-700 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-zinc-800" />
             Ditanggung Owner
           </div>
@@ -210,7 +210,7 @@ export default function LossPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-orange-700 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-orange-700 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-[#D97757]" />
             Ditanggung Penitip
           </div>
@@ -221,7 +221,7 @@ export default function LossPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-zinc-500 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-amber-500" />
             Faktor Dominan
           </div>

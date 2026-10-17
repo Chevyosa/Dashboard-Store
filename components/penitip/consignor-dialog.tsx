@@ -262,14 +262,15 @@ function ConsignorFormContent({ initialData, onClose, onSaved }: FormContentProp
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-4 border-t border-zinc-100">
+        {/* Buttons */}
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border-t border-zinc-100 p-3 sm:p-4 -mx-6 -mb-6 flex items-center justify-end gap-2 shrink-0">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={onClose}
             disabled={loading}
-            className="text-xs"
+            className="h-9 text-xs px-3"
           >
             Batal
           </Button>
@@ -277,7 +278,7 @@ function ConsignorFormContent({ initialData, onClose, onSaved }: FormContentProp
             type="submit"
             size="sm"
             disabled={loading}
-            className="bg-[#D97757] hover:bg-[#c26243] text-white text-xs font-medium"
+            className="h-9 px-4 bg-[#D97757] hover:bg-[#c26243] text-white text-xs font-medium"
           >
             {loading ? 'Menyimpan...' : isEditing ? 'Simpan Perubahan' : 'Tambah Penitip'}
           </Button>
@@ -292,12 +293,12 @@ export function ConsignorDialog({ open, onClose, onSaved, initialData }: Props) 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/50 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-zinc-900/50 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
         key={initialData ? `edit-${initialData.id}` : 'create'}
-        className="w-full max-w-md rounded-xl bg-white border border-zinc-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="w-full max-w-md rounded-t-2xl sm:rounded-xl bg-white border border-zinc-200 shadow-xl max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-150 flex flex-col"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

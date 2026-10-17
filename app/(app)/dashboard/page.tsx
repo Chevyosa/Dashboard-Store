@@ -152,7 +152,7 @@ export default function DashboardPage() {
               Riwayat Opname Terakhir
             </h3>
             <Link href="/opname" className="text-xs font-medium text-[#D97757] hover:underline">
-              Semua Opname →
+              Lihat Semua
             </Link>
           </div>
 

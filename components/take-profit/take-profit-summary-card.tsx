@@ -45,8 +45,8 @@ export function TakeProfitSummaryCard({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                Live Status Penarikan Owner
+              <span className="text-xs font-semibold text-zinc-600">
+                Status Penarikan Pemilik
               </span>
               {isSafe ? (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">

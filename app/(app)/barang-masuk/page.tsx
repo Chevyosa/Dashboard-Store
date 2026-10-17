@@ -249,19 +249,19 @@ export default function BarangMasukPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
           <Button
             type="button"
             variant="outline"
             onClick={handleOpenCreateReturn}
-            className="text-xs h-9 px-3 border-zinc-200 hover:bg-zinc-50 text-zinc-700"
+            className="text-xs h-9 px-3 border-zinc-200 hover:bg-zinc-50 text-zinc-700 min-h-[36px]"
           >
             + Retur Penitip
           </Button>
           <Button
             type="button"
             onClick={handleOpenCreateStockIn}
-            className="bg-[#D97757] hover:bg-[#c26243] text-white font-medium text-xs h-9 px-4 shadow-xs"
+            className="bg-[#D97757] hover:bg-[#c26243] text-white font-medium text-xs h-9 px-4 shadow-xs min-h-[36px]"
           >
             <span className="text-sm mr-1 leading-none">+</span> Catat Barang Masuk
           </Button>
@@ -271,7 +271,7 @@ export default function BarangMasukPage() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+          <div className="text-[11px] font-medium text-zinc-500">
             Modal Belanja Periode Ini
           </div>
           <div className="mt-1 font-mono text-xl font-bold text-zinc-900">
@@ -283,7 +283,7 @@ export default function BarangMasukPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-zinc-600 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-zinc-600 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-zinc-500" />
             Masuk (Own)
           </div>
@@ -294,7 +294,7 @@ export default function BarangMasukPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-[#D97757] uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-[#D97757] flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-[#D97757]" />
             Setoran Titipan
           </div>
@@ -305,7 +305,7 @@ export default function BarangMasukPage() {
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
-          <div className="text-[11px] font-medium text-amber-700 uppercase tracking-wider flex items-center gap-1">
+          <div className="text-[11px] font-medium text-amber-700 flex items-center gap-1">
             <span className="size-1.5 rounded-full bg-amber-500" />
             Retur Penitip
           </div>

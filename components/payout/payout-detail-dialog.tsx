@@ -79,9 +79,9 @@ export function PayoutDetailDialog({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs"
     >
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl border border-zinc-200 max-h-[90vh] flex flex-col">
+      <div className="w-full max-w-2xl rounded-t-2xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-xl border border-zinc-200 max-h-[92dvh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between pb-3 border-b border-zinc-100">
           <div>
@@ -179,34 +179,36 @@ export function PayoutDetailDialog({
                   </p>
                 ) : (
                   <div className="rounded-lg border border-zinc-200 overflow-hidden">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
-                        <tr>
-                          <th className="py-2 px-3">Tgl Opname</th>
-                          <th className="py-2 px-3 text-right">Bagi Hasil Jual</th>
-                          <th className="py-2 px-3 text-right">Kompensasi Hilang</th>
-                          <th className="py-2 px-3 text-right">Total Hak</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-100 font-mono">
-                        {detail.accruals.map((acc) => (
-                          <tr key={acc.id} className="hover:bg-zinc-50/60">
-                            <td className="py-2 px-3 text-zinc-800">
-                              {formatDateIndo(acc.opnameDate)}
-                            </td>
-                            <td className="py-2 px-3 text-right text-zinc-700">
-                              {formatRupiah(acc.soldShare)}
-                            </td>
-                            <td className="py-2 px-3 text-right text-zinc-700">
-                              {formatRupiah(acc.lossCompensation)}
-                            </td>
-                            <td className="py-2 px-3 text-right font-bold text-zinc-900">
-                              {formatRupiah(acc.payoutDue)}
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
+                          <tr>
+                            <th className="py-2 px-3">Tgl Opname</th>
+                            <th className="py-2 px-3 text-right">Bagi Hasil Jual</th>
+                            <th className="py-2 px-3 text-right">Kompensasi Hilang</th>
+                            <th className="py-2 px-3 text-right">Total Hak</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100 font-mono">
+                          {detail.accruals.map((acc) => (
+                            <tr key={acc.id} className="hover:bg-zinc-50/60">
+                              <td className="py-2 px-3 text-zinc-800">
+                                {formatDateIndo(acc.opnameDate)}
+                              </td>
+                              <td className="py-2 px-3 text-right text-zinc-700">
+                                {formatRupiah(acc.soldShare)}
+                              </td>
+                              <td className="py-2 px-3 text-right text-zinc-700">
+                                {formatRupiah(acc.lossCompensation)}
+                              </td>
+                              <td className="py-2 px-3 text-right font-bold text-zinc-900">
+                                {formatRupiah(acc.payoutDue)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 )}
               </div>
@@ -221,51 +223,53 @@ export function PayoutDetailDialog({
                   </p>
                 ) : (
                   <div className="rounded-lg border border-zinc-200 overflow-hidden">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
-                        <tr>
-                          <th className="py-2 px-3">Tgl Bayar</th>
-                          <th className="py-2 px-3">Metode</th>
-                          <th className="py-2 px-3 text-right">Nominal</th>
-                          <th className="py-2 px-3">Catatan</th>
-                          <th className="py-2 px-3 text-right">Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-100">
-                        {detail.payments.map((pay) => (
-                          <tr key={pay.id} className="hover:bg-zinc-50/60">
-                            <td className="py-2 px-3 font-mono text-zinc-800">
-                              {formatDateIndo(pay.paymentDate)}
-                            </td>
-                            <td className="py-2 px-3 capitalize">
-                              <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium bg-zinc-100 text-zinc-700">
-                                {pay.paymentMethod === 'cash'
-                                  ? 'Tunai'
-                                  : pay.paymentMethod === 'qris'
-                                  ? 'QRIS'
-                                  : 'Transfer'}
-                              </span>
-                            </td>
-                            <td className="py-2 px-3 text-right font-mono font-bold text-emerald-700">
-                              {formatRupiah(pay.amount)}
-                            </td>
-                            <td className="py-2 px-3 text-zinc-500 truncate max-w-[150px]">
-                              {pay.note || '—'}
-                            </td>
-                            <td className="py-2 px-3 text-right">
-                              <button
-                                type="button"
-                                disabled={deletingId === pay.id}
-                                onClick={() => handleDeletePayment(pay.id)}
-                                className="text-red-600 hover:text-red-800 text-[11px] font-medium"
-                              >
-                                {deletingId === pay.id ? '...' : 'Hapus'}
-                              </button>
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
+                          <tr>
+                            <th className="py-2 px-3">Tgl Bayar</th>
+                            <th className="py-2 px-3">Metode</th>
+                            <th className="py-2 px-3 text-right">Nominal</th>
+                            <th className="py-2 px-3">Catatan</th>
+                            <th className="py-2 px-3 text-right">Aksi</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                          {detail.payments.map((pay) => (
+                            <tr key={pay.id} className="hover:bg-zinc-50/60">
+                              <td className="py-2 px-3 font-mono text-zinc-800">
+                                {formatDateIndo(pay.paymentDate)}
+                              </td>
+                              <td className="py-2 px-3 capitalize">
+                                <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium bg-zinc-100 text-zinc-700">
+                                  {pay.paymentMethod === 'cash'
+                                    ? 'Tunai'
+                                    : pay.paymentMethod === 'qris'
+                                    ? 'QRIS'
+                                    : 'Transfer'}
+                                </span>
+                              </td>
+                              <td className="py-2 px-3 text-right font-mono font-bold text-emerald-700">
+                                {formatRupiah(pay.amount)}
+                              </td>
+                              <td className="py-2 px-3 text-zinc-500 truncate max-w-[150px]">
+                                {pay.note || '—'}
+                              </td>
+                              <td className="py-2 px-3 text-right">
+                                <button
+                                  type="button"
+                                  disabled={deletingId === pay.id}
+                                  onClick={() => handleDeletePayment(pay.id)}
+                                  className="text-red-600 hover:text-red-800 text-[11px] font-medium"
+                                >
+                                  {deletingId === pay.id ? '...' : 'Hapus'}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 )}
               </div>

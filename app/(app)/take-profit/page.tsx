@@ -204,7 +204,7 @@ export default function TakeProfitPage() {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="h-8 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-mono text-zinc-700"
+              className="h-9 sm:h-8 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-mono text-zinc-700 min-h-[36px]"
               placeholder="Dari"
             />
             <span className="text-xs text-zinc-400">-</span>
@@ -212,10 +212,10 @@ export default function TakeProfitPage() {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="h-8 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-mono text-zinc-700"
+              className="h-9 sm:h-8 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-mono text-zinc-700 min-h-[36px]"
               placeholder="Sampai"
             />
-            <Button type="submit" variant="outline" size="sm" className="h-8 text-xs px-2.5">
+            <Button type="submit" variant="outline" size="sm" className="h-9 sm:h-8 text-xs px-3 min-h-[36px]">
               Filter
             </Button>
             {(startDate || endDate) && (
@@ -224,7 +224,7 @@ export default function TakeProfitPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handleResetFilter}
-                className="h-8 text-xs px-2 text-zinc-500"
+                className="h-9 sm:h-8 text-xs px-2 text-zinc-500 min-h-[36px]"
               >
                 Reset
               </Button>

@@ -51,10 +51,10 @@ export function EditCapitalDialog({ open, currentValue, onClose, onSaved }: Prop
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-zinc-200/80 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-zinc-200/80 w-full max-w-md max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-150 flex flex-col">
+        <div className="sticky top-0 bg-white/95 backdrop-blur-xs z-10 p-4 sm:p-5 border-b border-zinc-100 flex items-center justify-between shrink-0">
           <div>
             <h2 className="text-sm font-bold text-zinc-900">Atur Cadangan Modal Belanja</h2>
             <p className="text-xs text-zinc-500 mt-0.5">
@@ -62,14 +62,15 @@ export function EditCapitalDialog({ open, currentValue, onClose, onSaved }: Prop
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-zinc-400 hover:text-zinc-600 text-lg leading-none p-1 rounded hover:bg-zinc-100 transition-colors"
+            className="text-zinc-400 hover:text-zinc-600 text-lg leading-none p-2 rounded-lg hover:bg-zinc-100 transition-colors"
           >
-            ×
+            ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 flex-1">
           {errorMessage && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
               {errorMessage}
@@ -124,20 +125,20 @@ export function EditCapitalDialog({ open, currentValue, onClose, onSaved }: Prop
             </p>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-100">
+          <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border-t border-zinc-100 p-3 sm:p-4 -mx-4 sm:-mx-5 -mb-4 sm:-mb-5 flex items-center justify-end gap-2 shrink-0">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={submitting}
-              className="h-8 text-xs px-3"
+              className="h-9 text-xs px-3"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={submitting}
-              className="h-8 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
+              className="h-9 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
             >
               {submitting ? 'Menyimpan...' : 'Simpan Pengaturan'}
             </Button>

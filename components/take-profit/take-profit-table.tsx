@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { formatRupiah, formatDateIndo } from '@/lib/format';
 import type { TakeProfitItem } from '@/lib/api';
+import { TakeProfitCard } from './take-profit-card';
 
 interface Props {
   items: TakeProfitItem[];
@@ -52,7 +53,8 @@ export function TakeProfitTable({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-xs overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-xl border border-zinc-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-semibold">
@@ -118,6 +120,18 @@ export function TakeProfitTable({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card List View */}
+      <div className="md:hidden space-y-2.5">
+        {items.map((item) => (
+          <TakeProfitCard
+            key={item.id}
+            item={item}
+            onDelete={handleDeleteClick}
+            deleting={deletingId === item.id}
+          />
+        ))}
       </div>
 
       {/* Pagination Controls */}

@@ -75,8 +75,8 @@ describe('PayoutTable', () => {
       />,
     );
 
-    expect(screen.getByText('Pak Sani')).toBeInTheDocument();
-    expect(screen.getByText('Kak Peja')).toBeInTheDocument();
+    expect(screen.getAllByText('Pak Sani').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Kak Peja').length).toBeGreaterThan(0);
 
     const payButtons = screen.getAllByRole('button', { name: /bayar/i });
     await user.click(payButtons[0]!);
@@ -105,7 +105,7 @@ describe('PayoutPage', () => {
     expect(screen.getByText('Memuat buku kas penitip...')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText('Pak Sani')).toBeInTheDocument();
+      expect(screen.getAllByText('Pak Sani').length).toBeGreaterThan(0);
     });
 
     expect(screen.getByText('+ Catat Pembayaran')).toBeInTheDocument();

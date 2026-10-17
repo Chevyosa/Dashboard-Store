@@ -41,20 +41,21 @@ export function ProductStatusDialog({ open, product, onClose, onStatusChanged }:
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/50 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-zinc-900/50 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-xl bg-white border border-zinc-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-xl bg-white border border-zinc-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="status-dialog-title"
       >
-        <div className="p-6 space-y-4">
+        <div className="w-12 h-1 bg-zinc-200 rounded-full mx-auto sm:hidden mt-3 -mb-1" />
+        <div className="p-5 sm:p-6 space-y-4">
           <div className="flex items-center gap-3">
             <div
-              className={`size-10 rounded-full flex items-center justify-center text-sm font-bold ${
+              className={`size-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
                 willActivate ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
               }`}
             >
@@ -80,14 +81,14 @@ export function ProductStatusDialog({ open, product, onClose, onStatusChanged }:
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2 pt-2">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={onClose}
               disabled={loading}
-              className="text-xs"
+              className="h-10 sm:h-8 text-xs px-3"
             >
               Batal
             </Button>
@@ -96,7 +97,7 @@ export function ProductStatusDialog({ open, product, onClose, onStatusChanged }:
               size="sm"
               onClick={handleConfirm}
               disabled={loading}
-              className={`text-xs font-medium text-white ${
+              className={`h-10 sm:h-8 text-xs font-medium text-white px-4 ${
                 willActivate
                   ? 'bg-emerald-600 hover:bg-emerald-700'
                   : 'bg-zinc-700 hover:bg-zinc-800'

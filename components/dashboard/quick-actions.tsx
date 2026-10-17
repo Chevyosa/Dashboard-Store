@@ -32,7 +32,7 @@ export function QuickActions() {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+      <h3 className="text-xs font-semibold text-zinc-600">
         Aksi Cepat Operasional
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -45,9 +45,6 @@ export function QuickActions() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-zinc-900 group-hover:text-[#D97757] transition-colors">
                 {act.title}
-              </span>
-              <span className="text-zinc-400 group-hover:translate-x-0.5 transition-transform text-xs">
-                →
               </span>
             </div>
             <p className="mt-1 text-[11px] text-zinc-500">{act.desc}</p>

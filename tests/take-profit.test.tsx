@@ -100,10 +100,10 @@ describe('TakeProfitTable', () => {
       />,
     );
 
-    expect(screen.getByText('Rp 100.000')).toBeInTheDocument();
-    expect(screen.getByText('💵 Tunai')).toBeInTheDocument();
-    expect(screen.getByText('Prive owner awal bulan')).toBeInTheDocument();
-    expect(screen.getByText('Opname #5')).toBeInTheDocument();
+    expect(screen.getAllByText('Rp 100.000').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('💵 Tunai').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Prive owner awal bulan').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Opname #5').length).toBeGreaterThan(0);
   });
 
   it('renders empty message when no withdrawals exist', () => {
@@ -143,7 +143,7 @@ describe('TakeProfitPage Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('Take Profit')).toBeInTheDocument();
       expect(screen.getByText('Rp 200.000')).toBeInTheDocument();
-      expect(screen.getByText('Prive owner awal bulan')).toBeInTheDocument();
+      expect(screen.getAllByText('Prive owner awal bulan').length).toBeGreaterThan(0);
     });
 
     // Click + Catat Tarik Laba button

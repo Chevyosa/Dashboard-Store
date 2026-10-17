@@ -54,11 +54,12 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs"
     >
-      <div className="w-full max-w-4xl my-auto rounded-xl bg-white p-4 sm:p-6 shadow-xl border border-zinc-200 space-y-4 max-h-[92vh] flex flex-col">
+      <div className="w-full sm:max-w-4xl rounded-t-2xl sm:rounded-xl bg-white p-4 sm:p-6 shadow-xl border border-zinc-200 space-y-4 max-h-[92dvh] sm:max-h-[92vh] flex flex-col">
+        <div className="w-12 h-1 bg-zinc-200 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
+        <div className="flex flex-row items-center justify-between gap-3 pb-3 border-b border-zinc-100">
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold text-zinc-900">
@@ -67,14 +68,14 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
               {opname && <OpnameStatusBadge status={opname.status} />}
             </div>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Tanggal Operasional: {opname ? formatDateIndo(opname.opnameDate) : '...'}
+              Tanggal: {opname ? formatDateIndo(opname.opnameDate) : '...'}
             </p>
           </div>
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="h-8 text-xs self-start sm:self-auto"
+            className="h-9 sm:h-8 text-xs px-3 min-h-[36px]"
           >
             Tutup
           </Button>
@@ -94,10 +95,10 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
             {/* KPI Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div className="rounded-lg border border-zinc-200 bg-zinc-50/70 p-3">
-                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
+                <span className="text-[10px] font-semibold text-zinc-500 block">
                   Total Omset (T)
                 </span>
-                <span className="font-mono text-base font-bold text-zinc-900 mt-1 block">
+                <span className="font-mono text-sm sm:text-base font-bold text-zinc-900 mt-1 block">
                   {formatRupiah(opname.totalTurnover)}
                 </span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">
@@ -106,10 +107,10 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
               </div>
 
               <div className="rounded-lg border border-zinc-200 bg-zinc-50/70 p-3">
-                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
+                <span className="text-[10px] font-semibold text-zinc-500 block">
                   Modal Own (COGS)
                 </span>
-                <span className="font-mono text-base font-bold text-zinc-900 mt-1 block">
+                <span className="font-mono text-sm sm:text-base font-bold text-zinc-900 mt-1 block">
                   {formatRupiah(opname.totalCogs)}
                 </span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">
@@ -118,10 +119,10 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
               </div>
 
               <div className="rounded-lg border border-zinc-200 bg-zinc-50/70 p-3">
-                <span className="text-[10px] font-semibold text-orange-700 uppercase tracking-wider block">
+                <span className="text-[10px] font-semibold text-orange-700 block">
                   Hak Penitip (Payout)
                 </span>
-                <span className="font-mono text-base font-bold text-orange-950 mt-1 block">
+                <span className="font-mono text-sm sm:text-base font-bold text-orange-950 mt-1 block">
                   {formatRupiah(opname.totalPayoutDue)}
                 </span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">
@@ -130,10 +131,10 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
               </div>
 
               <div className="rounded-lg border border-zinc-200 bg-zinc-50/70 p-3">
-                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
+                <span className="text-[10px] font-semibold text-zinc-500 block">
                   Total Loss
                 </span>
-                <span className="font-mono text-base font-bold text-zinc-900 mt-1 block">
+                <span className="font-mono text-sm sm:text-base font-bold text-zinc-900 mt-1 block">
                   {opname.totalLossQty} pcs
                 </span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">
@@ -144,7 +145,7 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
 
             {/* Rekonsiliasi Kas & Profit Permanen */}
             <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-3.5 space-y-3">
-              <div className="flex items-center justify-between border-b border-zinc-200/60 pb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-zinc-200/60 pb-2">
                 <span className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
                   <span>💵</span> Rekonsiliasi Kas Masuk Mingguan
                 </span>
@@ -170,31 +171,31 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Uang Tunai (Cash)</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold block">Uang Tunai (Cash)</span>
                   <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.cashAmount)}</span>
                 </div>
                 <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Uang QRIS / Transfer</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold block">Uang QRIS / Transfer</span>
                   <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.qrisAmount)}</span>
                 </div>
                 <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Total Uang Riil (R)</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold block">Total Uang Riil (R)</span>
                   <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.realCash)}</span>
                 </div>
                 <div className="bg-white p-2 rounded-lg border border-zinc-200/70">
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Omset Teoritis (T)</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold block">Omset Teoritis (T)</span>
                   <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.totalTurnover)}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-zinc-200/60 text-xs">
                 <div className="bg-white p-2.5 rounded-lg border border-zinc-200/70">
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Profit A (Basis Barang / Akrual)</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold block">Profit A (Basis Barang / Akrual)</span>
                   <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.profitA)}</span>
                   <span className="text-[10px] text-zinc-400 block mt-0.5">Penjualan own & titipan dikurangi biaya barang & kerugian</span>
                 </div>
                 <div className="bg-white p-2.5 rounded-lg border border-zinc-200/70">
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Profit B (Basis Kas Riil)</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold block">Profit B (Basis Kas Riil)</span>
                   <span className="font-mono font-bold text-zinc-900 mt-0.5 block">{formatRupiah(opname.profitB)}</span>
                   <span className="text-[10px] text-zinc-400 block mt-0.5">Uang riil (R) dikurangi kewajiban mitra dan modal belanja</span>
                 </div>
@@ -237,20 +238,20 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
             {/* Tab 1: Products table */}
             {activeTab === 'products' && (
               <div className="overflow-x-auto rounded-lg border border-zinc-200">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[680px]">
                   <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium">
                     <tr>
-                      <th className="py-2 px-3">Produk</th>
-                      <th className="py-2 px-2 text-right">Awal</th>
-                      <th className="py-2 px-2 text-right">Masuk</th>
-                      <th className="py-2 px-2 text-right">Retur</th>
-                      <th className="py-2 px-2 text-right">Teoritis</th>
-                      <th className="py-2 px-2 text-right">Fisik</th>
-                      <th className="py-2 px-2 text-right">Loss</th>
-                      <th className="py-2 px-2 text-right font-bold text-zinc-900">Terjual</th>
-                      <th className="py-2 px-2 text-right">Harga Jual</th>
-                      <th className="py-2 px-3 text-right font-bold text-zinc-900">Omset</th>
-                      <th className="py-2 px-3 text-right">Beban / Hak</th>
+                      <th className="py-2.5 px-3">Produk</th>
+                      <th className="py-2.5 px-2 text-right">Awal</th>
+                      <th className="py-2.5 px-2 text-right">Masuk</th>
+                      <th className="py-2.5 px-2 text-right">Retur</th>
+                      <th className="py-2.5 px-2 text-right">Teoritis</th>
+                      <th className="py-2.5 px-2 text-right">Fisik</th>
+                      <th className="py-2.5 px-2 text-right">Loss</th>
+                      <th className="py-2.5 px-2 text-right font-bold text-zinc-900">Terjual</th>
+                      <th className="py-2.5 px-2 text-right">Harga Jual</th>
+                      <th className="py-2.5 px-3 text-right font-bold text-zinc-900">Omset</th>
+                      <th className="py-2.5 px-3 text-right">Beban / Hak</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-100">
@@ -327,30 +328,56 @@ export function OpnameDetailDialog({ opnameId, onClose }: Props) {
             {activeTab === 'payouts' && (
               <div className="space-y-3">
                 {opname.payouts && opname.payouts.length > 0 ? (
-                  <div className="rounded-lg border border-zinc-200 divide-y divide-zinc-100 overflow-hidden">
-                    <div className="bg-zinc-50 p-2.5 grid grid-cols-4 text-[11px] font-semibold text-zinc-500">
-                      <div>Mitra Penitip</div>
-                      <div className="text-right">Hak Terjual</div>
-                      <div className="text-right">Ganti Rugi Loss</div>
-                      <div className="text-right font-bold text-zinc-900">Total Hak (Payout)</div>
+                  <>
+                    {/* Mobile cards view */}
+                    <div className="sm:hidden space-y-2">
+                      {opname.payouts.map((p) => (
+                        <div key={p.consignorId} className="p-3 bg-zinc-50/70 border border-zinc-200 rounded-lg space-y-1.5 text-xs">
+                          <div className="font-semibold text-zinc-900">
+                            {p.consignorName || `Penitip #${p.consignorId}`}
+                          </div>
+                          <div className="flex justify-between text-zinc-600">
+                            <span>Hak Terjual:</span>
+                            <span className="font-mono text-zinc-800">{formatRupiah(p.soldShare)}</span>
+                          </div>
+                          <div className="flex justify-between text-zinc-600">
+                            <span>Ganti Rugi:</span>
+                            <span className="font-mono text-zinc-800">{formatRupiah(p.lossCompensation)}</span>
+                          </div>
+                          <div className="flex justify-between pt-1 border-t border-zinc-200/60 font-semibold">
+                            <span className="text-orange-950">Total Hak Payout:</span>
+                            <span className="font-mono text-orange-950 font-bold">{formatRupiah(p.payoutDue)}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    {opname.payouts.map((p) => (
-                      <div key={p.consignorId} className="p-3 grid grid-cols-4 text-xs items-center">
-                        <div className="font-semibold text-zinc-900">
-                          {p.consignorName || `Penitip #${p.consignorId}`}
-                        </div>
-                        <div className="text-right font-mono text-zinc-700">
-                          {formatRupiah(p.soldShare)}
-                        </div>
-                        <div className="text-right font-mono text-zinc-700">
-                          {formatRupiah(p.lossCompensation)}
-                        </div>
-                        <div className="text-right font-mono font-bold text-orange-950">
-                          {formatRupiah(p.payoutDue)}
-                        </div>
+
+                    {/* Desktop table view */}
+                    <div className="hidden sm:block rounded-lg border border-zinc-200 divide-y divide-zinc-100 overflow-hidden">
+                      <div className="bg-zinc-50 p-2.5 grid grid-cols-4 text-[11px] font-semibold text-zinc-500">
+                        <div>Mitra Penitip</div>
+                        <div className="text-right">Hak Terjual</div>
+                        <div className="text-right">Ganti Rugi Loss</div>
+                        <div className="text-right font-bold text-zinc-900">Total Hak (Payout)</div>
                       </div>
-                    ))}
-                  </div>
+                      {opname.payouts.map((p) => (
+                        <div key={p.consignorId} className="p-3 grid grid-cols-4 text-xs items-center">
+                          <div className="font-semibold text-zinc-900">
+                            {p.consignorName || `Penitip #${p.consignorId}`}
+                          </div>
+                          <div className="text-right font-mono text-zinc-700">
+                            {formatRupiah(p.soldShare)}
+                          </div>
+                          <div className="text-right font-mono text-zinc-700">
+                            {formatRupiah(p.lossCompensation)}
+                          </div>
+                          <div className="text-right font-mono font-bold text-orange-950">
+                            {formatRupiah(p.payoutDue)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   <div className="py-8 text-center text-xs text-zinc-400 border rounded-lg border-zinc-200">
                     Tidak ada produk titipan pada periode opname ini.

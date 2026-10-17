@@ -67,7 +67,7 @@ export function LossCard({ loss, onEdit, onDelete }: Props) {
           size="sm"
           disabled={isClosed}
           onClick={() => onEdit(loss)}
-          className="h-7 text-xs px-2 text-zinc-600 disabled:opacity-40"
+          className="h-8 text-xs px-2.5 text-zinc-600 hover:text-zinc-900 disabled:opacity-40"
         >
           Ubah
         </Button>
@@ -77,7 +77,7 @@ export function LossCard({ loss, onEdit, onDelete }: Props) {
           size="sm"
           disabled={isClosed}
           onClick={() => onDelete(loss)}
-          className="h-7 text-xs px-2 text-red-600 hover:bg-red-50 disabled:opacity-40"
+          className="h-8 text-xs px-2.5 text-red-600 hover:bg-red-50 disabled:opacity-40"
         >
           Hapus
         </Button>

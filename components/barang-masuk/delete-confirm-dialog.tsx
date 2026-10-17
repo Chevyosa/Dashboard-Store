@@ -46,9 +46,10 @@ export function DeleteConfirmDialog({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs"
     >
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl border border-zinc-200 space-y-4">
+      <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-xl bg-white p-5 sm:p-6 shadow-xl border border-zinc-200 space-y-4">
+        <div className="w-12 h-1 bg-zinc-200 rounded-full mx-auto sm:hidden -mt-1 mb-2" />
         <div className="space-y-1">
           <h2 className="text-base font-bold text-zinc-900">{title}</h2>
           <p className="text-xs text-zinc-600 leading-relaxed">{description}</p>
@@ -66,7 +67,7 @@ export function DeleteConfirmDialog({
             variant="outline"
             onClick={onClose}
             disabled={submitting}
-            className="h-8 text-xs px-3"
+            className="h-10 sm:h-8 text-xs px-3"
           >
             Batal
           </Button>
@@ -74,7 +75,7 @@ export function DeleteConfirmDialog({
             type="button"
             onClick={handleConfirm}
             disabled={submitting}
-            className="h-8 text-xs px-3 bg-red-600 hover:bg-red-700 text-white font-medium"
+            className="h-10 sm:h-8 text-xs px-4 bg-red-600 hover:bg-red-700 text-white font-medium"
           >
             {submitting ? 'Menghapus...' : confirmLabel}
           </Button>

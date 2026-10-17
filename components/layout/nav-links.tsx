@@ -19,7 +19,7 @@ export function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-1 sm:gap-4 text-xs">
+    <nav className="hidden lg:flex items-center gap-1 xl:gap-3 text-xs">
       {NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
