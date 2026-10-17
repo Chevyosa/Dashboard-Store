@@ -11,8 +11,13 @@ const mockOverview: apiModule.TakeProfitOverview = {
     id: 5,
     opnameDate: '2026-03-01',
     realCash: '1000000.0000',
+    totalPayoutDue: '300000.0000',
   },
-  totalUnpaidConsignorBalance: '300000.0000',
+  totalPayout: '300000.0000',
+  payoutPaid: '300000.0000',
+  payoutUnpaid: '0.0000',
+  payoutStatus: 'settled',
+  totalUnpaidConsignorBalance: '0.0000',
   minWorkingCapital: '400000.0000',
   withdrawnCurrentPeriod: '100000.0000',
   totalWithdrawnAllTime: '150000.0000',
@@ -52,6 +57,7 @@ describe('TakeProfitSummaryCard', () => {
 
     // Breakdown values
     expect(screen.getByText('Rp 1.000.000')).toBeInTheDocument();
+    expect(screen.getByText('2. Payout Penitip')).toBeInTheDocument();
     expect(screen.getByText('Rp 300.000')).toBeInTheDocument();
     expect(screen.getByText('Rp 400.000')).toBeInTheDocument();
     expect(screen.getByText('Rp 100.000')).toBeInTheDocument();

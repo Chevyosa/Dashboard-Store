@@ -19,7 +19,10 @@ export function TakeProfitSummaryCard({
 
   const {
     latestOpname,
-    totalUnpaidConsignorBalance,
+    totalPayout,
+    payoutPaid,
+    payoutUnpaid,
+    payoutStatus,
     minWorkingCapital,
     withdrawnCurrentPeriod,
     totalWithdrawnAllTime,
@@ -72,11 +75,11 @@ export function TakeProfitSummaryCard({
             <p className="text-xs text-zinc-600 max-w-2xl leading-relaxed">
               {isSafe ? (
                 <>
-                  Nominal ini adalah <strong className="text-emerald-800">keuntungan murni Anda</strong> yang halal untuk ditarik. Seluruh hak mitra penitip ({formatRupiah(totalUnpaidConsignorBalance)}) dan cadangan modal belanja ({formatRupiah(minWorkingCapital)}) sudah aman disisihkan di kas toko.
+                  Nominal ini adalah <strong className="text-emerald-800">keuntungan murni Anda</strong> yang halal untuk ditarik. Payout bagi hasil penitip ({formatRupiah(totalPayout)}) dan cadangan modal belanja ({formatRupiah(minWorkingCapital)}) sudah aman disisihkan dari kas toko.
                 </>
               ) : (
                 <span className="text-amber-800 font-medium">
-                  {warningReason || 'Kas toko saat ini belum mencapai batas aman modal belanja. Disarankan untuk menahan penarikan laba.'}
+                  {warningReason || 'Kas toko saat ini belum mencapai batas aman modal belanja dan payout penitip. Disarankan untuk menahan penarikan laba.'}
                 </span>
               )}
             </p>
@@ -123,18 +126,30 @@ export function TakeProfitSummaryCard({
           </p>
         </div>
 
-        {/* Step 2: Unpaid Consignors */}
+        {/* Step 2: Payout Consignors */}
         <div className="rounded-xl border border-zinc-200/80 bg-white p-4 shadow-2xs space-y-2">
           <div className="flex items-center justify-between text-xs text-zinc-500">
-            <span className="font-medium">2. Hutang Hak Penitip</span>
-            <span className="text-[10px] font-mono text-rose-600 font-semibold">- Kewajiban</span>
+            <span className="font-medium">2. Payout Penitip</span>
+            <span className="text-[10px] font-mono text-rose-600 font-semibold">- Payout</span>
           </div>
           <div className="text-lg font-bold text-rose-700 font-mono">
-            {formatRupiah(totalUnpaidConsignorBalance)}
+            {formatRupiah(totalPayout)}
           </div>
-          <p className="text-[11px] text-zinc-500 leading-tight">
-            Total hak bagi hasil seluruh penitip yang belum dibayarkan.
-          </p>
+          <div className="text-[11px] leading-tight">
+            {payoutStatus === 'settled' ? (
+              <span className="text-emerald-700 font-medium inline-flex items-center gap-1">
+                ✓ Lunas Dibayar {payoutPaid && Number(payoutPaid) > 0 ? `(${formatRupiah(payoutPaid)})` : ''}
+              </span>
+            ) : payoutStatus === 'partial' ? (
+              <span className="text-amber-700 font-medium">
+                Dibayar: {formatRupiah(payoutPaid)} · Sisa: {formatRupiah(payoutUnpaid)}
+              </span>
+            ) : (
+              <span className="text-zinc-500">
+                Belum Dibayarkan ({formatRupiah(payoutUnpaid)})
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Step 3: Working Capital Buffer */}

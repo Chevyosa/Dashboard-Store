@@ -1272,7 +1272,12 @@ export interface TakeProfitOverview {
     id: number;
     opnameDate: string;
     realCash: string;
+    totalPayoutDue: string;
   } | null;
+  totalPayout: string;
+  payoutPaid: string;
+  payoutUnpaid: string;
+  payoutStatus: 'settled' | 'partial' | 'unpaid';
   totalUnpaidConsignorBalance: string;
   minWorkingCapital: string;
   withdrawnCurrentPeriod: string;
