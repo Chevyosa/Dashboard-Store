@@ -772,7 +772,8 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
                     id={cashInputId}
                     type="number"
                     min="0"
-                    step="1000"
+                    step="any"
+                    inputMode="numeric"
                     value={cashAmount}
                     onChange={(e) => setCashAmount(e.target.value)}
                     className="pl-9 h-9 text-xs font-mono font-medium"
@@ -791,7 +792,8 @@ export function OpnameWizard({ initialDate, onSuccess, onCancel }: Props) {
                     id={qrisInputId}
                     type="number"
                     min="0"
-                    step="1000"
+                    step="any"
+                    inputMode="numeric"
                     value={qrisAmount}
                     onChange={(e) => setQrisAmount(e.target.value)}
                     className="pl-9 h-9 text-xs font-mono font-medium"

@@ -149,7 +149,8 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
               id={amountId}
               type="number"
               min="1"
-              step="1000"
+              step="any"
+              inputMode="numeric"
               placeholder="Contoh: 150000"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
