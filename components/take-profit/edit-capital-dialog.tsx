@@ -85,7 +85,8 @@ export function EditCapitalDialog({ open, currentValue, onClose, onSaved }: Prop
               id={inputId}
               type="number"
               min="0"
-              step="1000"
+              step="any"
+              inputMode="numeric"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="Contoh: 400000"
