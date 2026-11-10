@@ -6,6 +6,8 @@ import {
   getTakeProfitOverview,
   listTakeProfits,
   deleteTakeProfit,
+  isTakeProfitWithdrawalAllowed,
+  isTakeProfitDeletionAllowed,
   type TakeProfitOverview,
   type TakeProfitItem,
 } from '@/lib/api';
@@ -72,10 +74,50 @@ export default function TakeProfitPage() {
     }
   }
 
+  // Initial load: state is only set after the awaited responses, and ignored
+  // if the page unmounts first. Loading flags already start as true.
   useEffect(() => {
-    loadOverview();
-    loadWithdrawals(1);
+    let cancelled = false;
+
+    async function loadInitial() {
+      const [overviewResult, listResult] = await Promise.allSettled([
+        getTakeProfitOverview(),
+        listTakeProfits({ page: 1, limit: 10 }),
+      ]);
+      if (cancelled) return;
+
+      if (overviewResult.status === 'fulfilled') {
+        setOverview(overviewResult.value.data);
+      } else {
+        const err = overviewResult.reason;
+        setErrorMessage(
+          err instanceof Error ? err.message : 'Gagal memuat ringkasan take profit.',
+        );
+      }
+      setLoadingOverview(false);
+
+      if (listResult.status === 'fulfilled') {
+        setWithdrawals(listResult.value.data);
+        setPagination(listResult.value.pagination);
+      } else {
+        const err = listResult.reason;
+        setErrorMessage(
+          err instanceof Error ? err.message : 'Gagal memuat riwayat penarikan laba.',
+        );
+      }
+      setLoadingTable(false);
+    }
+
+    void loadInitial();
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  // Fail closed: withdrawals require an initialized, safe ledger; deletes are
+  // only allowed for legacy records before the ledger cutover.
+  const canWithdraw = isTakeProfitWithdrawalAllowed(overview) && overview?.isSafe === true;
+  const canDelete = isTakeProfitDeletionAllowed(overview);
 
   function handleFilterSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -138,6 +180,7 @@ export default function TakeProfitPage() {
 
         <Button
           onClick={() => setWithdrawDialogOpen(true)}
+          disabled={!canWithdraw}
           className="bg-[#D97757] hover:bg-[#c26243] text-white text-xs h-9 px-4 font-medium shadow-xs shrink-0 self-start sm:self-auto"
         >
           + Catat Tarik Laba
@@ -237,6 +280,7 @@ export default function TakeProfitPage() {
           items={withdrawals}
           loading={loadingTable}
           onDelete={handleDeleteWithdrawal}
+          canDelete={canDelete}
           pagination={pagination}
           onPageChange={(page) => loadWithdrawals(page)}
         />

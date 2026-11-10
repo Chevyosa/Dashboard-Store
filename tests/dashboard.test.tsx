@@ -121,11 +121,16 @@ const mockSummaryData: apiModule.DashboardSummaryResponse = {
     rawBalance: '65000.0000',
     isSafe: true,
     warningReason: null,
+    liquidityInitialized: true,
+    currentLiquidBalance: '150000.0000',
+    unpaidStockPurchaseBalance: '10000.0000',
+    totalUnpaidObligations: '45000.0000',
+    liquidityShortfall: '0.0000',
   },
 };
 
 describe('DashboardKPICards', () => {
-  it('renders turnover, halal take profit, loss, and pending payout with Rupiah format', () => {
+  it('renders turnover, safe-to-withdraw liquidity, loss, and pending payout with Rupiah format', () => {
     render(
       <DashboardKPICards
         overview={mockSummaryData.overview}
@@ -137,11 +142,94 @@ describe('DashboardKPICards', () => {
     expect(screen.getByText('Omset Penjualan')).toBeInTheDocument();
     expect(screen.getByText('Rp 150.000')).toBeInTheDocument();
     expect(screen.getByText('25 Pcs Terjual')).toBeInTheDocument();
-    expect(screen.getByText('Laba Halal Ditarik')).toBeInTheDocument();
+    expect(screen.getByText('Kas Aman Ditarik')).toBeInTheDocument();
     expect(screen.getByText('Aman Ditarik')).toBeInTheDocument();
     expect(screen.getByText('Rp 65.000')).toBeInTheDocument();
     expect(screen.getByText('Rp 2.000')).toBeInTheDocument();
     expect(screen.getByText('Rp 35.000')).toBeInTheDocument();
+  });
+
+  it('does not label withdrawable cash as halal profit', () => {
+    render(
+      <DashboardKPICards
+        overview={mockSummaryData.overview}
+        latestReconciliation={mockSummaryData.latestReconciliation}
+        takeProfit={mockSummaryData.takeProfit}
+      />
+    );
+
+    expect(screen.queryByText(/halal/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/setelah kewajiban & cadangan/i)).toBeInTheDocument();
+  });
+
+  it('shows liquidity shortfall when withdrawals must be held', () => {
+    render(
+      <DashboardKPICards
+        overview={mockSummaryData.overview}
+        latestReconciliation={mockSummaryData.latestReconciliation}
+        takeProfit={{
+          ...mockSummaryData.takeProfit!,
+          availableToWithdraw: '65000.0000',
+          liquidityShortfall: '12000.0000',
+          isSafe: false,
+        }}
+      />
+    );
+
+    expect(screen.getByText('Tahan Dulu')).toBeInTheDocument();
+    expect(screen.getByText(/Kurang Rp 12\.000/)).toBeInTheDocument();
+    expect(screen.queryByText('Rp 65.000')).not.toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+
+  it('fails closed without crashing when dashboard liquidity fields have unexpected types', () => {
+    render(
+      <DashboardKPICards
+        overview={mockSummaryData.overview}
+        latestReconciliation={mockSummaryData.latestReconciliation}
+        takeProfit={{
+          ...mockSummaryData.takeProfit!,
+          availableToWithdraw: null,
+          liquidityShortfall: 12000,
+        } as unknown as apiModule.TakeProfitOverview}
+      />
+    );
+
+    expect(screen.getByText('Tahan Dulu')).toBeInTheDocument();
+    expect(screen.queryByText('Rp 12.000')).not.toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+
+  it('shows a not-initialized warning instead of legacy availableToWithdraw', () => {
+    render(
+      <DashboardKPICards
+        overview={mockSummaryData.overview}
+        latestReconciliation={mockSummaryData.latestReconciliation}
+        takeProfit={{
+          ...mockSummaryData.takeProfit!,
+          availableToWithdraw: '77000.0000',
+          liquidityInitialized: false,
+          currentLiquidBalance: null,
+        }}
+      />
+    );
+
+    expect(screen.getByText('Belum Diinisialisasi')).toBeInTheDocument();
+    expect(screen.queryByText('Rp 77.000')).not.toBeInTheDocument();
+    expect(screen.queryByText('Aman Ditarik')).not.toBeInTheDocument();
+  });
+
+  it('does not present Profit A as withdrawable cash when liquidity data is unavailable', () => {
+    render(
+      <DashboardKPICards
+        overview={mockSummaryData.overview}
+        latestReconciliation={mockSummaryData.latestReconciliation}
+        takeProfit={null}
+      />
+    );
+
+    expect(screen.queryByText('Rp 43.000')).not.toBeInTheDocument();
+    expect(screen.getByText(/Data likuiditas tidak tersedia/i)).toBeInTheDocument();
   });
 });
 

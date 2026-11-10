@@ -22,6 +22,7 @@ import { StockInTable } from '@/components/barang-masuk/stock-in-table';
 import { StockInCard } from '@/components/barang-masuk/stock-in-card';
 import { StockReturnTable } from '@/components/barang-masuk/stock-return-table';
 import { DeleteConfirmDialog } from '@/components/barang-masuk/delete-confirm-dialog';
+import { StockInPaymentDialog } from '@/components/barang-masuk/stock-in-payment-dialog';
 
 type ActiveTab = 'stock_in' | 'returns';
 type TypeFilter = 'all' | 'purchase' | 'consignment_in' | 'initial';
@@ -54,6 +55,9 @@ export default function BarangMasukPage() {
 
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [selectedReturn, setSelectedReturn] = useState<StockReturn | null>(null);
+
+  // Purchase-only payment dialog target.
+  const [paymentTarget, setPaymentTarget] = useState<StockIn | null>(null);
 
   const [deleteTarget, setDeleteTarget] = useState<{
     type: 'stock_in' | 'return';
@@ -195,6 +199,12 @@ export default function BarangMasukPage() {
       return [saved, ...prev];
     });
     void loadData(); // refresh summary
+  }
+
+  function handleOpenPayment(item: StockIn) {
+    // Only purchases carry a payable obligation; consignments/initial stock never do.
+    if (item.type !== 'purchase') return;
+    setPaymentTarget(item);
   }
 
   // Handlers for Returns
@@ -459,6 +469,7 @@ export default function BarangMasukPage() {
               stockIns={filteredStockIns}
               onEdit={handleOpenEditStockIn}
               onDelete={(item) => setDeleteTarget({ type: 'stock_in', item })}
+              onPay={handleOpenPayment}
             />
           </div>
 
@@ -475,6 +486,7 @@ export default function BarangMasukPage() {
                   stockIn={item}
                   onEdit={handleOpenEditStockIn}
                   onDelete={(item) => setDeleteTarget({ type: 'stock_in', item })}
+                  onPay={handleOpenPayment}
                 />
               ))
             )}
@@ -496,6 +508,16 @@ export default function BarangMasukPage() {
         initialData={selectedStockIn}
         products={products}
       />
+
+      {/* Purchase Payment Dialog (keyed so state resets per stock-in) */}
+      {paymentTarget && (
+        <StockInPaymentDialog
+          key={paymentTarget.id}
+          open
+          stockIn={paymentTarget}
+          onClose={() => setPaymentTarget(null)}
+        />
+      )}
 
       {/* Stock Return Dialog */}
       <StockReturnDialog

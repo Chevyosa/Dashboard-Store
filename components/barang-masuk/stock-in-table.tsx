@@ -8,6 +8,7 @@ interface Props {
   stockIns: StockIn[];
   onEdit: (stockIn: StockIn) => void;
   onDelete: (stockIn: StockIn) => void;
+  onPay: (stockIn: StockIn) => void;
 }
 
 function formatRupiah(amountStr: string): string {
@@ -16,7 +17,7 @@ function formatRupiah(amountStr: string): string {
   return `Rp ${Math.round(num).toLocaleString('id-ID')}`;
 }
 
-export function StockInTable({ stockIns, onEdit, onDelete }: Props) {
+export function StockInTable({ stockIns, onEdit, onDelete, onPay }: Props) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   function toggleExpand(id: number) {
@@ -115,6 +116,18 @@ export function StockInTable({ stockIns, onEdit, onDelete }: Props) {
                       )}
                     </td>
                     <td className="py-3 px-3.5 text-right space-x-1" onClick={(e) => e.stopPropagation()}>
+                      {item.type === 'purchase' && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Pembayaran belanja ${item.date}`}
+                          onClick={() => onPay(item)}
+                          className="h-7 text-xs px-2 text-[#D97757] hover:text-[#c26243] hover:bg-orange-50"
+                        >
+                          Bayar
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         variant="ghost"

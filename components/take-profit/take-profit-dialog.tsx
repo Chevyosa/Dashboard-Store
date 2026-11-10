@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   createTakeProfit,
+  isTakeProfitLiquiditySafe,
+  isTakeProfitWithdrawalAllowed,
   type TakeProfitItem,
   type TakeProfitOverview,
   type TakeProfitPaymentMethod,
@@ -17,6 +19,16 @@ interface Props {
   onClose: () => void;
   onSaved: (item: TakeProfitItem) => void;
   overview: TakeProfitOverview | null;
+}
+
+const AMOUNT_REGEX = /^\d{1,16}(\.\d{1,4})?$/;
+
+/** Parse DECIMAL(20,4) into integer ten-thousandths without JS float math. */
+function toMoneyUnits(value: string): bigint | null {
+  const normalized = value.trim();
+  if (!AMOUNT_REGEX.test(normalized)) return null;
+  const [integerPart = '0', decimalPart = ''] = normalized.split('.');
+  return BigInt(`${integerPart}${decimalPart.padEnd(4, '0')}`);
 }
 
 function getTodayJakarta(): string {
@@ -43,13 +55,21 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
 
   if (!open) return null;
 
-  const availableNum = overview ? Number(overview.availableToWithdraw) : 0;
-  const numericAmount = Number(amount) || 0;
-  const isOverSafeLimit = availableNum > 0 && numericAmount > availableNum;
+  const liquidityInitialized = overview?.liquidityInitialized === true;
+  // Never trust the legacy availableToWithdraw before the ledger is initialized.
+  const liquiditySafe = isTakeProfitLiquiditySafe(overview);
+  const canWithdraw = isTakeProfitWithdrawalAllowed(overview);
+  // Never present or submit an API amount as safe unless all safety flags agree.
+  const availableAmount = liquiditySafe ? overview?.availableToWithdraw ?? '' : '';
+  const availableUnits = liquiditySafe ? toMoneyUnits(availableAmount) : null;
+  const numericAmountUnits = toMoneyUnits(amount);
+  const isOverSafeLimit =
+    numericAmountUnits !== null && availableUnits !== null && numericAmountUnits > availableUnits;
 
   function handleFillMaxSafe() {
-    if (availableNum > 0) {
-      setAmount(String(Math.round(availableNum)));
+    if (canWithdraw) {
+      // Keep the exact API decimal string; do not round through Number/Math.round.
+      setAmount(availableAmount);
     }
   }
 
@@ -57,8 +77,23 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!amount || numericAmount <= 0) {
-      setErrorMessage('Nominal penarikan laba harus berupa angka lebih besar dari 0.');
+    if (!liquidityInitialized) {
+      setErrorMessage('Saldo kas likuid belum diinisialisasi. Penarikan tidak dapat dicatat.');
+      return;
+    }
+
+    if (!canWithdraw) {
+      setErrorMessage('Kas likuid belum dinyatakan aman untuk penarikan. Periksa kembali posisi kas dan kewajiban.');
+      return;
+    }
+
+    if (numericAmountUnits === null || numericAmountUnits <= BigInt(0)) {
+      setErrorMessage('Nominal penarikan harus berupa angka positif dengan maksimal 4 angka desimal.');
+      return;
+    }
+
+    if (availableUnits === null || numericAmountUnits > availableUnits) {
+      setErrorMessage('Nominal penarikan melebihi batas aman yang tersedia. Periksa kembali saldo likuid.');
       return;
     }
 
@@ -71,7 +106,7 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
     try {
       const res = await createTakeProfit({
         opnameId: overview?.latestOpname?.id ?? null,
-        amount,
+        amount: amount.trim(),
         withdrawalDate,
         paymentMethod,
         note: note.trim() || null,
@@ -98,7 +133,7 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
           <div>
             <h2 className="text-sm font-bold text-zinc-900">Catat Penarikan Laba (Take Profit)</h2>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Tarik uang kas halal setelah hak penitip dan cadangan belanja disisihkan.
+              Tarik kas likuid setelah kewajiban penitip/stok dan cadangan belanja disisihkan.
             </p>
           </div>
           <button
@@ -112,33 +147,45 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 flex-1">
           {errorMessage && (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+            <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
               {errorMessage}
             </div>
           )}
 
           {/* Safe Available Banner */}
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-3.5 flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-medium text-emerald-700 block">
-                Nominal Halal & Aman Ditarik Saat Ini:
-              </span>
-              <span className="text-base font-bold text-emerald-800 font-mono">
-                {overview ? formatRupiah(overview.availableToWithdraw) : '—'}
-              </span>
-            </div>
+          {liquidityInitialized ? (
+            <div className={`rounded-xl border p-3.5 flex items-center justify-between ${liquiditySafe ? 'border-emerald-100 bg-emerald-50/70' : 'border-amber-200 bg-amber-50/70'}`}>
+              <div>
+                <span className={`text-[11px] font-medium block ${liquiditySafe ? 'text-emerald-700' : 'text-amber-800'}`}>
+                  {liquiditySafe
+                    ? 'Kas Aman Ditarik Saat Ini (berdasarkan saldo kas likuid):'
+                    : 'Status Kas Likuid (penarikan ditahan):'}
+                </span>
+                <span className={`text-base font-bold font-mono ${liquiditySafe ? 'text-emerald-800' : 'text-amber-900'}`}>
+                  {liquiditySafe ? formatRupiah(availableAmount) : '—'}
+                </span>
+              </div>
 
-            {availableNum > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleFillMaxSafe}
-                className="h-7 text-xs border-emerald-300 bg-white hover:bg-emerald-100 text-emerald-800"
-              >
-                Tarik Semua Aman
-              </Button>
-            )}
-          </div>
+              {canWithdraw && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleFillMaxSafe}
+                  className="h-7 text-xs border-emerald-300 bg-white hover:bg-emerald-100 text-emerald-800"
+                >
+                  Tarik Semua Aman
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div
+              role="alert"
+              className="rounded-xl border border-amber-300 bg-amber-50 p-3.5 text-xs text-amber-900"
+            >
+              <strong>Saldo kas likuid belum diinisialisasi.</strong> Nominal aman ditarik belum
+              dapat dihitung, sehingga penarikan tidak dapat disimpan.
+            </div>
+          )}
 
           {/* Amount input */}
           <div className="space-y-1.5">
@@ -147,10 +194,11 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
             </Label>
             <Input
               id={amountId}
-              type="number"
-              min="1"
-              step="1000"
-              placeholder="Contoh: 150000"
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              maxLength={21}
+              placeholder="Contoh: 150000 atau 150000.50"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="h-10 text-sm font-mono"
@@ -234,7 +282,7 @@ export function TakeProfitDialog({ open, onClose, onSaved, overview }: Props) {
             </Button>
             <Button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !canWithdraw}
               className="h-9 text-xs px-4 bg-[#D97757] hover:bg-[#c26243] text-white font-medium shadow-xs"
             >
               {submitting ? 'Menyimpan...' : 'Simpan Penarikan'}

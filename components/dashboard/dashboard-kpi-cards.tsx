@@ -1,7 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { formatRupiah } from '@/lib/format';
-import type { DashboardOverview, DashboardReconciliationResult, TakeProfitOverview } from '@/lib/api';
+import {
+  isTakeProfitLiquiditySafe,
+  type DashboardOverview,
+  type DashboardReconciliationResult,
+  type TakeProfitOverview,
+} from '@/lib/api';
 
 interface DashboardKPICardsProps {
   overview: DashboardOverview;
@@ -19,9 +24,15 @@ export function DashboardKPICards({
   const soldQty = latest ? latest.totalSoldQty : 0;
   const lossQty = latest ? latest.totalLossQty : 0;
   const lossCost = latestReconciliation ? latestReconciliation.totalOwnLossCost : '0.0000';
-  const profitA = latestReconciliation ? latestReconciliation.profitA : null;
   const unpaidPayout = overview.totalUnpaidConsignorBalance;
-  const stockValuation = overview.totalStockValuation;
+
+  // Withdrawable cash comes only from the liquidity ledger. Before the ledger
+  // is initialized (or when data is missing) no amount is shown: fail closed.
+  const liquidityInitialized = takeProfit?.liquidityInitialized === true;
+  const liquidityShortfall =
+    typeof takeProfit?.liquidityShortfall === 'string' ? takeProfit.liquidityShortfall : null;
+  const hasShortfall = liquidityInitialized && liquidityShortfall !== null && Number(liquidityShortfall) > 0;
+  const safe = isTakeProfitLiquiditySafe(takeProfit ?? null);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -41,51 +52,51 @@ export function DashboardKPICards({
         </p>
       </div>
 
-      {/* 2. Laba Halal Ditarik (Take Profit) */}
+      {/* 2. Kas Aman Ditarik (Take Profit, ledger-based) */}
       <Link
         href="/take-profit"
         className="rounded-lg border border-zinc-200 bg-white p-5 shadow-xs space-y-2 hover:border-[#D97757]/60 hover:shadow-xs transition-all group block"
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-zinc-600 group-hover:text-[#D97757] transition-colors">
-            Laba Halal Ditarik
+            Kas Aman Ditarik
           </span>
-          {takeProfit ? (
-            takeProfit.isSafe ? (
-              <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-                Aman Ditarik
-              </span>
-            ) : (
-              <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
-                Tahan Dulu
-              </span>
-            )
-          ) : (
+          {!takeProfit ? (
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600">
+              Tidak Tersedia
+            </span>
+          ) : !liquidityInitialized ? (
+            <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+              Belum Diinisialisasi
+            </span>
+          ) : safe ? (
             <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-              Take Profit
+              Aman Ditarik
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+              Tahan Dulu
             </span>
           )}
         </div>
         <div
           className={`text-2xl font-bold tracking-tight font-sans ${
-            takeProfit && !takeProfit.isSafe && Number(takeProfit.availableToWithdraw) <= 0
-              ? 'text-amber-700'
-              : 'text-emerald-700'
+            !liquidityInitialized ? 'text-zinc-400' : safe ? 'text-emerald-700' : 'text-amber-700'
           }`}
         >
-          {takeProfit
-            ? formatRupiah(takeProfit.availableToWithdraw)
-            : profitA
-            ? formatRupiah(profitA)
-            : '—'}
+          {takeProfit && safe ? formatRupiah(takeProfit.availableToWithdraw) : '—'}
         </div>
         <div className="flex items-center justify-between text-xs text-zinc-500">
           <span className="truncate">
-            {takeProfit
-              ? takeProfit.isSafe
-                ? 'Bersih setelah payout & modal belanja'
-                : 'Belum cukup modal belanja toko'
-              : 'Kas bersih yang halal ditarik owner'}
+            {!takeProfit
+              ? 'Data likuiditas tidak tersedia'
+              : !liquidityInitialized
+                ? 'Saldo kas likuid belum diinisialisasi'
+                : hasShortfall
+                  ? `Kurang ${formatRupiah(liquidityShortfall)} untuk kewajiban & cadangan`
+                  : safe
+                    ? 'Kas likuid setelah kewajiban & cadangan'
+                    : 'Tahan penarikan, kas likuid belum cukup'}
           </span>
           <span className="text-[11px] text-[#D97757] font-semibold shrink-0 ml-1">
             Buka

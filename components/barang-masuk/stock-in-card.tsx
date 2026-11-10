@@ -8,6 +8,7 @@ interface Props {
   stockIn: StockIn;
   onEdit: (stockIn: StockIn) => void;
   onDelete: (stockIn: StockIn) => void;
+  onPay: (stockIn: StockIn) => void;
 }
 
 function formatRupiah(amountStr: string): string {
@@ -16,7 +17,7 @@ function formatRupiah(amountStr: string): string {
   return `Rp ${Math.round(num).toLocaleString('id-ID')}`;
 }
 
-export function StockInCard({ stockIn, onEdit, onDelete }: Props) {
+export function StockInCard({ stockIn, onEdit, onDelete, onPay }: Props) {
   const [expanded, setExpanded] = useState(false);
   const isClosed = stockIn.opnameId !== null;
 
@@ -124,6 +125,18 @@ export function StockInCard({ stockIn, onEdit, onDelete }: Props) {
         </button>
 
         <div className="flex items-center gap-1">
+          {stockIn.type === 'purchase' && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              aria-label={`Pembayaran belanja ${stockIn.date}`}
+              onClick={() => onPay(stockIn)}
+              className="h-8 text-xs px-2.5 text-[#D97757] hover:bg-orange-50"
+            >
+              Bayar
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"

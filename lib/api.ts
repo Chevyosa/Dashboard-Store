@@ -516,6 +516,59 @@ export async function getOpenPeriodStockInSummary(): Promise<{ data: StockInSumm
   return apiFetch<{ data: StockInSummary }>("/api/v1/stock-ins/summary/open-period");
 }
 
+// === STOCK-IN (PURCHASE) PAYMENTS ===
+// Append-only settlement history for purchase receipts; no edit/delete endpoints.
+
+export type StockInPaymentMethod = "cash" | "transfer" | "qris";
+
+export interface StockInPayment {
+  id: number;
+  stockInId: number;
+  amount: string;
+  paymentDate: string;
+  paymentMethod: StockInPaymentMethod;
+  note: string | null;
+  createdBy: number | null;
+  createdAt: string;
+}
+
+export interface StockInPaymentHistory {
+  stockInId: number;
+  receiptTotal: string;
+  paidAmount: string;
+  outstandingAmount: string;
+  payments: StockInPayment[];
+}
+
+export interface CreateStockInPaymentPayload {
+  amount: string;
+  paymentDate: string;
+  paymentMethod: StockInPaymentMethod;
+  note?: string | null;
+}
+
+export async function getStockInPayments(
+  stockInId: number,
+): Promise<{ data: StockInPaymentHistory }> {
+  return apiFetch<{ data: StockInPaymentHistory }>(`/api/v1/stock-ins/${stockInId}/payments`);
+}
+
+/**
+ * Records a purchase payment. `idempotencyKey` must be a UUID generated once per
+ * logical submit and reused verbatim (with the same payload) on retry.
+ */
+export async function createStockInPayment(
+  stockInId: number,
+  payload: CreateStockInPaymentPayload,
+  idempotencyKey: string,
+): Promise<{ data: StockInPayment }> {
+  return apiFetch<{ data: StockInPayment }>(`/api/v1/stock-ins/${stockInId}/payments`, {
+    method: "POST",
+    headers: { "Idempotency-Key": idempotencyKey },
+    body: payload,
+  });
+}
+
 export async function getStockReturns(
   params: ListStockReturnsParams = {},
 ): Promise<StockReturnListResponse> {
@@ -1287,6 +1340,16 @@ export interface TakeProfitOverview {
   rawBalance: string;
   isSafe: boolean;
   warningReason: string | null;
+  /** True once the cash-liquidity ledger has an opening balance. */
+  liquidityInitialized: boolean;
+  /** Actual liquid cash per ledger; null while not initialized. */
+  currentLiquidBalance: string | null;
+  /** Unpaid own-stock purchases (supplier debt). */
+  unpaidStockPurchaseBalance: string;
+  /** Unpaid consignor balance + unpaid stock purchases. */
+  totalUnpaidObligations: string;
+  /** Amount by which liquid cash falls short of obligations + reserve (>= 0). */
+  liquidityShortfall: string;
 }
 
 export interface ListTakeProfitsParams {
@@ -1313,6 +1376,51 @@ export interface CreateTakeProfitPayload {
   withdrawalDate: string;
   paymentMethod: TakeProfitPaymentMethod;
   note?: string | null;
+}
+
+/** Parse DECIMAL(20,4) to exact ten-thousandths; malformed API values fail closed. */
+function liquidityAmountUnits(value: unknown): bigint | null {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim();
+  if (!/^\d{1,16}(?:\.\d{1,4})?$/.test(normalized)) return null;
+  const [integerPart = '0', decimalPart = ''] = normalized.split('.');
+  return BigInt(`${integerPart}${decimalPart.padEnd(4, '0')}`);
+}
+
+/** True only when the ledger explicitly reports initialized, safe liquidity. */
+export function isTakeProfitLiquiditySafe(overview: TakeProfitOverview | null): boolean {
+  if (!overview || overview.liquidityInitialized !== true || overview.isSafe !== true) return false;
+  const requiredAmounts: unknown[] = [
+    overview.currentLiquidBalance,
+    overview.totalUnpaidConsignorBalance,
+    overview.minWorkingCapital,
+    overview.availableToWithdraw,
+    overview.unpaidStockPurchaseBalance,
+    overview.totalUnpaidObligations,
+    overview.liquidityShortfall,
+  ];
+  if (requiredAmounts.some((value) => liquidityAmountUnits(value) === null)) return false;
+  const shortfallUnits = liquidityAmountUnits(overview.liquidityShortfall);
+  const availableUnits = liquidityAmountUnits(overview.availableToWithdraw);
+  return shortfallUnits === BigInt(0) && availableUnits !== null && availableUnits >= BigInt(0);
+}
+
+/**
+ * A withdrawal may only be recorded when the initialized ledger explicitly
+ * reports a safe position, no shortfall, and a positive safe-to-withdraw amount.
+ */
+export function isTakeProfitWithdrawalAllowed(overview: TakeProfitOverview | null): boolean {
+  if (!isTakeProfitLiquiditySafe(overview) || !overview) return false;
+  const availableUnits = liquidityAmountUnits(overview.availableToWithdraw);
+  return availableUnits !== null && availableUnits > BigInt(0);
+}
+
+/**
+ * Withdrawal history becomes immutable once the liquidity ledger is
+ * initialized; only legacy (pre-ledger) records may be deleted.
+ */
+export function isTakeProfitDeletionAllowed(overview: TakeProfitOverview | null): boolean {
+  return overview !== null && !overview.liquidityInitialized;
 }
 
 export async function getTakeProfitOverview(): Promise<{ data: TakeProfitOverview }> {

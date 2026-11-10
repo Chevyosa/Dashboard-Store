@@ -10,6 +10,8 @@ interface Props {
   items: TakeProfitItem[];
   loading: boolean;
   onDelete: (item: TakeProfitItem) => void;
+  /** False once history is immutable (liquidity ledger initialized). */
+  canDelete: boolean;
   pagination: {
     page: number;
     limit: number;
@@ -23,12 +25,14 @@ export function TakeProfitTable({
   items,
   loading,
   onDelete,
+  canDelete,
   pagination,
   onPageChange,
 }: Props) {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   function handleDeleteClick(item: TakeProfitItem) {
+    if (!canDelete) return;
     if (confirm(`Hapus catatan penarikan laba sebesar ${formatRupiah(item.amount)} pada tanggal ${formatDateIndo(item.withdrawalDate)}?`)) {
       setDeletingId(item.id);
       onDelete(item);
@@ -65,7 +69,7 @@ export function TakeProfitTable({
                 <th className="py-3 px-3.5 text-center">Metode</th>
                 <th className="py-3 px-3.5">Catatan</th>
                 <th className="py-3 px-3.5">Dicatat Oleh</th>
-                <th className="py-3 px-3.5 text-right">Aksi</th>
+                {canDelete && <th className="py-3 px-3.5 text-right">Aksi</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
@@ -104,17 +108,19 @@ export function TakeProfitTable({
                   <td className="py-3 px-3.5 text-zinc-500 text-[11px]">
                     {item.createdByUsername || 'System'}
                   </td>
-                  <td className="py-3 px-3.5 text-right">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDeleteClick(item)}
-                      disabled={deletingId === item.id}
-                      className="h-7 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2"
-                    >
-                      {deletingId === item.id ? 'Menghapus...' : 'Hapus'}
-                    </Button>
-                  </td>
+                  {canDelete && (
+                    <td className="py-3 px-3.5 text-right">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteClick(item)}
+                        disabled={deletingId === item.id}
+                        className="h-7 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2"
+                      >
+                        {deletingId === item.id ? 'Menghapus...' : 'Hapus'}
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -130,9 +136,17 @@ export function TakeProfitTable({
             item={item}
             onDelete={handleDeleteClick}
             deleting={deletingId === item.id}
+            canDelete={canDelete}
           />
         ))}
       </div>
+
+      {!canDelete && (
+        <p className="text-[11px] text-zinc-500">
+          🔒 Riwayat penarikan bersifat permanen setelah saldo kas likuid diinisialisasi dan tidak
+          dapat dihapus.
+        </p>
+      )}
 
       {/* Pagination Controls */}
       {pagination.totalPages > 1 && (

@@ -9,9 +9,11 @@ interface TakeProfitCardProps {
   item: TakeProfitItem;
   onDelete: (item: TakeProfitItem) => void;
   deleting: boolean;
+  /** False once history is immutable (liquidity ledger initialized). */
+  canDelete: boolean;
 }
 
-export function TakeProfitCard({ item, onDelete, deleting }: TakeProfitCardProps) {
+export function TakeProfitCard({ item, onDelete, deleting, canDelete }: TakeProfitCardProps) {
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-xs space-y-3">
       {/* Top Header: Date & Payment Method */}
@@ -62,15 +64,17 @@ export function TakeProfitCard({ item, onDelete, deleting }: TakeProfitCardProps
       <div className="flex items-center justify-between pt-2 border-t border-zinc-100 text-[11px] text-zinc-500">
         <span>Oleh: {item.createdByUsername || 'System'}</span>
 
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => onDelete(item)}
-          disabled={deleting}
-          className="h-8 text-xs text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 px-3"
-        >
-          {deleting ? 'Menghapus...' : 'Hapus'}
-        </Button>
+        {canDelete && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onDelete(item)}
+            disabled={deleting}
+            className="h-8 text-xs text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 px-3"
+          >
+            {deleting ? 'Menghapus...' : 'Hapus'}
+          </Button>
+        )}
       </div>
     </div>
   );

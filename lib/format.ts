@@ -4,7 +4,7 @@
  */
 
 export function formatRupiah(value: string | null | undefined): string {
-  if (!value || value.trim() === '') {
+  if (typeof value !== 'string' || value.trim() === '') {
     return '—';
   }
 
@@ -24,7 +24,7 @@ export function formatRupiah(value: string | null | undefined): string {
 }
 
 export function formatPercent(value: string | null | undefined): string {
-  if (!value || value.trim() === '') {
+  if (typeof value !== 'string' || value.trim() === '') {
     return '—';
   }
 
